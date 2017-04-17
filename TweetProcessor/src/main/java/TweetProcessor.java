@@ -15,7 +15,7 @@ import java.util.*;
 
 
 public class TweetProcessor {
-	private static final int MINIMUM_TWEETS = 60;
+	private static final int MINIMUM_TWEETS = 70;
 
 	private static final Set<String> FIRST_NAMES = buildFirstNamesHashSet();
 
@@ -25,63 +25,62 @@ public class TweetProcessor {
 	public static void main(String[] args) {
 		// Check argument
 		if (args.length == 0) {
-			throw new RuntimeException("Argument input file is missing.");
+			throw new RuntimeException("Argument input files are missing.");
 		}
 
-		File inputFile = new File(args[0]);
+		List<File> fileList = new ArrayList<>();
 
-		try {
-			LineIterator lineIterator = FileUtils.lineIterator(inputFile, "UTF-8");
-			Multimap<Profile, Tweet> profileTweetMap = HashMultimap.create();
-			int lineCounter = 0;
+		for (String arg : args) {
+			fileList.add(new File(arg));
+		}
 
-			System.out.println("Processing and applying initial rule set (no retweets, only real persons with locations)...");
+		Multimap<Profile, Tweet> profileTweetMap = HashMultimap.create();
+		int lineCounter = 0;
+		System.out.println("Processing and applying initial rule set (no retweets, only real persons with locations)...");
 
+		for (File inputFile : fileList) {
 			try {
-				while (lineIterator.hasNext()) {
-					lineCounter++;
-					if (lineCounter % 100000 == 0) {
-						System.out.println("Processed " + lineCounter + " lines.");
+				LineIterator lineIterator = FileUtils.lineIterator(inputFile, "UTF-8");
+				try {
+					while (lineIterator.hasNext()) {
+						lineCounter++;
+						if (lineCounter % 100000 == 0) {
+							System.out.println("Processed " + lineCounter + " lines.");
+						}
+						String line = lineIterator.nextLine();
+						Status status = TwitterObjectFactory.createStatus(line);
+						if (statusFilter(status)) {
+							Profile profile = convertUserToProfile(status.getUser());
+							Tweet tweet = convertStatusToTweet(status);
+							profileTweetMap.put(profile, tweet);
+						}
 					}
-					String line = lineIterator.nextLine();
-					Status status = TwitterObjectFactory.createStatus(line);
-					if (statusFilter(status)) {
-						Profile profile = convertUserToProfile(status.getUser());
-						Tweet tweet = convertStatusToTweet(status);
-						profileTweetMap.put(profile, tweet);
-					}
+				} finally {
+					LineIterator.closeQuietly(lineIterator);
 				}
-			} finally {
-				LineIterator.closeQuietly(lineIterator);
+			} catch (Exception e) {
+				System.out.println("Error: " + e.getMessage());
 			}
-
-			System.out.println("\nUnique profiles: " + profileTweetMap.keySet().size());
-			System.out.println("Unique tweets: " + profileTweetMap.size());
-
-			System.out.println("\nApplying rule: ignore profiles with fewer than " + MINIMUM_TWEETS + " tweets...");
-			profileTweetMap.asMap().entrySet().removeIf(e -> (e.getValue().size() < MINIMUM_TWEETS));
-
-			System.out.println("\nUnique profiles: " + profileTweetMap.keySet().size());
-			System.out.println("Unique tweets: " + profileTweetMap.size());
-
-			System.out.println("\nApplying rule: ignore profiles without predicted location...");
-
-			profileTweetMap.asMap().forEach((k, v) -> k.setPredictedLocation(guessLocation(k.getLocation())));
-			profileTweetMap.asMap().entrySet().removeIf(e -> (e.getKey().getPredictedLocation() == null));
-
-			System.out.println("\nUnique profiles: " + profileTweetMap.keySet().size());
-			System.out.println("Unique tweets: " + profileTweetMap.size());
-
-			// Build JSON output
-			File file = new File("output.json");
-			try (Writer writer = new FileWriter(file)) {
-				Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
-				gson.toJson(profileTweetMap.asMap(), writer);
-				System.out.println("\nJSON file saved in: " + file.getAbsolutePath());
-			}
-		} catch (Exception e) {
-			System.out.println("Error: " + e.getMessage());
 		}
+
+		System.out.println("\nUnique profiles: " + profileTweetMap.keySet().size());
+		System.out.println("Unique tweets: " + profileTweetMap.size());
+
+		System.out.println("\nApplying rule: ignore profiles with fewer than " + MINIMUM_TWEETS + " tweets...");
+		profileTweetMap.asMap().entrySet().removeIf(e -> (e.getValue().size() < MINIMUM_TWEETS));
+
+		System.out.println("\nUnique profiles: " + profileTweetMap.keySet().size());
+		System.out.println("Unique tweets: " + profileTweetMap.size());
+
+		System.out.println("\nApplying rule: ignore profiles without predicted location...");
+
+		profileTweetMap.asMap().forEach((k, v) -> k.setPredictedLocation(guessLocation(k.getLocation())));
+		profileTweetMap.asMap().entrySet().removeIf(e -> (e.getKey().getPredictedLocation() == null));
+
+		System.out.println("\nUnique profiles: " + profileTweetMap.keySet().size());
+		System.out.println("Unique tweets: " + profileTweetMap.size());
+
+		writeJsonOutput(profileTweetMap);
 	}
 
 
@@ -212,5 +211,17 @@ public class TweetProcessor {
 			return results;
 		}
 		return Collections.emptyMap();
+	}
+
+
+	private static void writeJsonOutput(Multimap<Profile, Tweet> profileTweetMap) {
+		File file = new File("output.json");
+		try (Writer writer = new FileWriter(file)) {
+			Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
+			gson.toJson(profileTweetMap.asMap(), writer);
+			System.out.println("\nJSON file saved in: " + file.getAbsolutePath());
+		} catch (IOException e) {
+			System.out.println("Error writing output file: " + e.getMessage());
+		}
 	}
 }
