@@ -39,6 +39,7 @@ class PostProcessor {
 	private static PredictedLocation guessLocation(String location) {
 		String firstPartOfLocation = StringUtil.getFirstPartOfLocation(location);
 		List<PredictedLocation> matchingLocations = getMatchingLocations(firstPartOfLocation);
+
 		if (!matchingLocations.isEmpty()) {
 			Map<PredictedLocation, Integer> results = calculateBestMatch(matchingLocations, firstPartOfLocation);
 			Comparator<? super Map.Entry<PredictedLocation, Integer>> valueComparator = (entry1, entry2) -> entry1.getValue().compareTo(entry2.getValue());
@@ -50,9 +51,8 @@ class PostProcessor {
 	}
 
 
-	private static List<PredictedLocation> getMatchingLocations(String location) {
+	private static List<PredictedLocation> getMatchingLocations(String firstPartOfLocation) {
 		List<PredictedLocation> matchingLocations = new ArrayList<>();
-		String firstPartOfLocation = StringUtil.getFirstPartOfLocation(location);
 
 		for (PredictedLocation predictedLocation : Config.getInstance().getPredictedLocationList()) {
 			String normalizedPlace = predictedLocation.getPlace().toLowerCase();

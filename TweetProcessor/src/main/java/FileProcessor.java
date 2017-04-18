@@ -1,6 +1,5 @@
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.gson.*;
 import data.Profile;
 import data.Tweet;
 import twitter4j.*;
@@ -41,9 +40,7 @@ class FileProcessor {
 
 
 	private boolean containsLocation(String line) {
-		JsonElement jsonElement = new JsonParser().parse(line);
-		JsonObject jsonObject = jsonElement.getAsJsonObject();
-		return jsonObject.get("location") != null;
+		return !line.contains("location\":null");
 	}
 
 

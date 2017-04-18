@@ -46,7 +46,7 @@ public class TweetProcessor {
 		File file = new File("output.json");
 		try (Writer writer = new FileWriter(file)) {
 			Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
-			gson.toJson(profilesAndTweets, writer);
+			gson.toJson(profilesAndTweets.asMap(), writer);
 			System.out.println("JSON file saved in: " + file.getAbsolutePath());
 		} catch (IOException e) {
 			System.err.println("Error writing output file '" + file.getName() + "'. Message: " + e.getMessage());

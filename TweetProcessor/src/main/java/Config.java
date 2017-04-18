@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 
-public class Config {
+class Config {
 	private static Config instance;
 
 	private int minimumTweets = 75;
@@ -25,12 +25,12 @@ public class Config {
 	}
 
 
-	public Set<String> getNameSet() {
+	Set<String> getNameSet() {
 		return nameSet;
 	}
 
 
-	public List<PredictedLocation> getPredictedLocationList() {
+	List<PredictedLocation> getPredictedLocationList() {
 		return predictedLocationList;
 	}
 
