@@ -57,4 +57,9 @@ public class PredictedLocation {
 				.append(province, predictedLocation.province)
 				.isEquals();
 	}
+
+
+	@Override public String toString() {
+		return this.getPlace() + " - " + this.getProvince();
+	}
 }

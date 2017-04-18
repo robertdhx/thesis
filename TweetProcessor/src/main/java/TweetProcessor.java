@@ -3,9 +3,8 @@ import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import data.GeoLocation;
 import data.*;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
 import twitter4j.*;
 
@@ -15,7 +14,7 @@ import java.util.*;
 
 
 public class TweetProcessor {
-	private static final int MINIMUM_TWEETS = 70;
+	private static final int MINIMUM_TWEETS = 75;
 
 	private static final Set<String> FIRST_NAMES = buildFirstNamesHashSet();
 
@@ -39,24 +38,17 @@ public class TweetProcessor {
 		System.out.println("Processing and applying initial rule set (no retweets, only real persons with locations)...");
 
 		for (File inputFile : fileList) {
-			try {
-				LineIterator lineIterator = FileUtils.lineIterator(inputFile, "UTF-8");
-				try {
-					while (lineIterator.hasNext()) {
-						lineCounter++;
-						if (lineCounter % 100000 == 0) {
-							System.out.println("Processed " + lineCounter + " lines.");
-						}
-						String line = lineIterator.nextLine();
-						Status status = TwitterObjectFactory.createStatus(line);
-						if (statusFilter(status)) {
-							Profile profile = convertUserToProfile(status.getUser());
-							Tweet tweet = convertStatusToTweet(status);
-							profileTweetMap.put(profile, tweet);
-						}
+			try (Reader reader = new FileReader(inputFile)) {
+				BufferedReader br = new BufferedReader(reader);
+				String line;
+				while ((line = br.readLine()) != null) {
+					lineCounter++;
+					Status status = TwitterObjectFactory.createStatus(line);
+					if (statusFilter(status)) {
+						Profile profile = convertUserToProfile(status.getUser());
+						Tweet tweet = convertStatusToTweet(status);
+						profileTweetMap.put(profile, tweet);
 					}
-				} finally {
-					LineIterator.closeQuietly(lineIterator);
 				}
 			} catch (Exception e) {
 				System.out.println("Error: " + e.getMessage());
@@ -80,7 +72,7 @@ public class TweetProcessor {
 		System.out.println("\nUnique profiles: " + profileTweetMap.keySet().size());
 		System.out.println("Unique tweets: " + profileTweetMap.size());
 
-		writeJsonOutput(profileTweetMap);
+		writeJsonOutput(profileTweetMap.asMap());
 	}
 
 
@@ -89,9 +81,8 @@ public class TweetProcessor {
 				status.getId(),
 				status.getText(),
 				status.getCreatedAt(),
-				status.getGeoLocation(),
-				status.getPlace(),
-				status.getHashtagEntities()
+				createGeoLocation(status.getGeoLocation()),
+				createHashtags(status.getHashtagEntities())
 		);
 	}
 
@@ -104,6 +95,29 @@ public class TweetProcessor {
 				user.getDescription(),
 				user.getLocation()
 		);
+	}
+
+
+	private static GeoLocation createGeoLocation(twitter4j.GeoLocation geoLocation) {
+		if (geoLocation != null) {
+			return new GeoLocation(geoLocation.getLatitude(), geoLocation.getLongitude());
+		}
+		else {
+			return null;
+		}
+	}
+
+
+	private static Set<Hashtag> createHashtags(HashtagEntity[] hashtagEntities) {
+		if (hashtagEntities != null) {
+			Set<Hashtag> hashtagSet = new HashSet<>();
+			for (HashtagEntity hashtagEntity : hashtagEntities) {
+				hashtagSet.add(new Hashtag(hashtagEntity.getText()));
+			}
+			return hashtagSet;
+		} else {
+			return null;
+		}
 	}
 
 
@@ -215,11 +229,11 @@ public class TweetProcessor {
 	}
 
 
-	private static void writeJsonOutput(Multimap<Profile, Tweet> profileTweetMap) {
+	private static void writeJsonOutput(Map<Profile, Collection<Tweet>> profileTweetMap) {
 		File file = new File("output.json");
 		try (Writer writer = new FileWriter(file)) {
 			Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
-			gson.toJson(profileTweetMap.asMap(), writer);
+			gson.toJson(profileTweetMap, writer);
 			System.out.println("\nJSON file saved in: " + file.getAbsolutePath());
 		} catch (IOException e) {
 			System.out.println("Error writing output file: " + e.getMessage());

@@ -1,8 +1,7 @@
 package data;
 
-import twitter4j.*;
-
 import java.util.Date;
+import java.util.Set;
 
 
 public class Tweet {
@@ -14,18 +13,15 @@ public class Tweet {
 
 	private GeoLocation geolocation;
 
-	private Place place;
-
-	private HashtagEntity[] hashtagEntities;
+	private Set<Hashtag> hashtagSet;
 
 
-	public Tweet(long id, String text, Date date, GeoLocation geolocation, Place place, HashtagEntity[] hashtagEntities) {
+	public Tweet(long id, String text, Date date, GeoLocation geolocation, Set<Hashtag> hashtagSet) {
 		this.id = id;
 		this.text = text;
 		this.date = date;
 		this.geolocation = geolocation;
-		this.place = place;
-		this.hashtagEntities = hashtagEntities;
+		this.hashtagSet = hashtagSet;
 	}
 
 
@@ -69,22 +65,12 @@ public class Tweet {
 	}
 
 
-	public Place getPlace() {
-		return place;
+	public Set<Hashtag> getHashtagSet() {
+		return hashtagSet;
 	}
 
 
-	public void setPlace(Place place) {
-		this.place = place;
-	}
-
-
-	public HashtagEntity[] getHashtagEntities() {
-		return hashtagEntities;
-	}
-
-
-	public void setHashtagEntities(HashtagEntity[] hashtagEntities) {
-		this.hashtagEntities = hashtagEntities;
+	public void setHashtagSet(Set<Hashtag> hashtagSet) {
+		this.hashtagSet = hashtagSet;
 	}
 }
