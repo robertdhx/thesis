@@ -2,6 +2,7 @@ package data;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import twitter4j.User;
 
 
 public class Profile {
@@ -24,6 +25,15 @@ public class Profile {
 		this.name = name;
 		this.description = description;
 		this.location = location;
+	}
+
+
+	public Profile(User user) {
+		this.id = user.getId();
+		this.username = user.getScreenName();
+		this.name = user.getName();
+		this.description = user.getDescription();
+		this.location = user.getLocation();
 	}
 
 

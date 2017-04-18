@@ -2,191 +2,64 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import data.GeoLocation;
 import data.*;
 import org.apache.commons.lang3.StringUtils;
-import twitter4j.*;
+import twitter4j.TwitterException;
+import util.StringUtil;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.util.*;
 
 
 public class TweetProcessor {
-	private static final int MINIMUM_TWEETS = 75;
-
-	private static final Set<String> FIRST_NAMES = buildFirstNamesHashSet();
-
-	private static final List<PredictedLocation> PREDICTED_LOCATION_LIST = buildPredictedLocationList();
-
-
 	public static void main(String[] args) {
-		// Check argument
 		if (args.length == 0) {
 			throw new RuntimeException("Argument input files are missing.");
 		}
 
-		List<File> fileList = new ArrayList<>();
+		Config config = Config.getInstance();
+		config.buildFirstNamesHashSet();
+		config.buildPredictedLocationList();
 
+		List<File> fileList = new ArrayList<>();
 		for (String arg : args) {
 			fileList.add(new File(arg));
 		}
 
-		Multimap<Profile, Tweet> profileTweetMap = HashMultimap.create();
-		int lineCounter = 0;
-		System.out.println("Processing and applying initial rule set (no retweets, only real persons with locations)...");
+		Multimap<Profile, Tweet> profilesAndTweets = HashMultimap.create();
 
 		for (File inputFile : fileList) {
-			try (Reader reader = new FileReader(inputFile)) {
-				BufferedReader br = new BufferedReader(reader);
-				String line;
-				while ((line = br.readLine()) != null) {
-					lineCounter++;
-					Status status = TwitterObjectFactory.createStatus(line);
-					if (statusFilter(status)) {
-						Profile profile = convertUserToProfile(status.getUser());
-						Tweet tweet = convertStatusToTweet(status);
-						profileTweetMap.put(profile, tweet);
-					}
-				}
-			} catch (Exception e) {
-				System.out.println("Error: " + e.getMessage());
+			try {
+				FileProcessor fileProcessor = new FileProcessor(inputFile);
+				profilesAndTweets.putAll(fileProcessor.getProfilesAndTweets());
+			} catch (IOException | TwitterException e) {
+				System.out.println("Error during processing of '" + inputFile + ". Message: " + e.getMessage());
 			}
 		}
 
-		System.out.println("\nUnique profiles: " + profileTweetMap.keySet().size());
-		System.out.println("Unique tweets: " + profileTweetMap.size());
+		System.out.println("\nUnique profiles: " + profilesAndTweets.keySet().size());
+		System.out.println("Unique tweets: " + profilesAndTweets.size());
 
-		System.out.println("\nApplying rule: ignore profiles with fewer than " + MINIMUM_TWEETS + " tweets...");
-		profileTweetMap.asMap().entrySet().removeIf(e -> (e.getValue().size() < MINIMUM_TWEETS));
+		System.out.println("\nApplying rule: ignore profiles with fewer than " + config.getMinimumTweets() + " tweets...");
+		profilesAndTweets.asMap().entrySet().removeIf(e -> (e.getValue().size() < config.getMinimumTweets()));
 
-		System.out.println("\nUnique profiles: " + profileTweetMap.keySet().size());
-		System.out.println("Unique tweets: " + profileTweetMap.size());
+		System.out.println("\nUnique profiles: " + profilesAndTweets.keySet().size());
+		System.out.println("Unique tweets: " + profilesAndTweets.size());
 
 		System.out.println("\nApplying rule: ignore profiles without predicted location...");
 
-		profileTweetMap.asMap().forEach((k, v) -> k.setPredictedLocation(guessLocation(k.getLocation())));
-		profileTweetMap.asMap().entrySet().removeIf(e -> (e.getKey().getPredictedLocation() == null));
+		profilesAndTweets.asMap().forEach((k, v) -> k.setPredictedLocation(guessLocation(k.getLocation())));
+		profilesAndTweets.asMap().entrySet().removeIf(e -> (e.getKey().getPredictedLocation() == null));
 
-		System.out.println("\nUnique profiles: " + profileTweetMap.keySet().size());
-		System.out.println("Unique tweets: " + profileTweetMap.size());
+		System.out.println("\nUnique profiles: " + profilesAndTweets.keySet().size());
+		System.out.println("Unique tweets: " + profilesAndTweets.size());
 
-		writeJsonOutput(profileTweetMap.asMap());
+		writeJsonOutput(profilesAndTweets.asMap());
 	}
 
 
-	private static Tweet convertStatusToTweet(Status status) {
-		return new Tweet(
-				status.getId(),
-				status.getText(),
-				createGeoLocation(status.getGeoLocation()),
-				createHashtags(status.getHashtagEntities())
-		);
-	}
-
-
-	private static Profile convertUserToProfile(User user) {
-		return new Profile(
-				user.getId(),
-				user.getScreenName(),
-				user.getName(),
-				user.getDescription(),
-				user.getLocation()
-		);
-	}
-
-
-	private static GeoLocation createGeoLocation(twitter4j.GeoLocation geoLocation) {
-		if (geoLocation != null) {
-			return new GeoLocation(geoLocation.getLatitude(), geoLocation.getLongitude());
-		} else {
-			return null;
-		}
-	}
-
-
-	private static Set<Hashtag> createHashtags(HashtagEntity[] hashtagEntities) {
-		if (hashtagEntities != null) {
-			Set<Hashtag> hashtagSet = new HashSet<>();
-			for (HashtagEntity hashtagEntity : hashtagEntities) {
-				hashtagSet.add(new Hashtag(hashtagEntity.getText()));
-			}
-			return hashtagSet;
-		} else {
-			return null;
-		}
-	}
-
-
-	private static boolean statusFilter(Status status) {
-		// Remove retweets
-		if (status.isRetweet()) {
-			return false;
-		}
-		User user = status.getUser();
-		// Filter users that do not have a location
-		if (user.getLocation() == null) {
-			return false;
-		}
-		// Filter first names that do not occur in the HashSet FIRST_NAMES
-		String firstName = getFirstName(user.getName());
-		if (!FIRST_NAMES.contains(firstName.toLowerCase())) {
-			return false;
-		}
-		// If all filter conditions are satisfied, return true
-		return true;
-	}
-
-
-	private static Set<String> buildFirstNamesHashSet() {
-		try (InputStream in = TweetProcessor.class.getResourceAsStream("firstnames.txt")) {
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-			Set<String> firstNames = new HashSet<>();
-			String line;
-			while ((line = bufferedReader.readLine()) != null) {
-				firstNames.add(line);
-			}
-			return firstNames;
-		} catch (Exception e) {
-			throw new RuntimeException("Could not load file with first names.");
-		}
-	}
-
-
-	private static List<PredictedLocation> buildPredictedLocationList() {
-		try (InputStream in = TweetProcessor.class.getResourceAsStream("places.json")) {
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-			Type listType = new TypeToken<List<PredictedLocation>>() {
-			}.getType();
-			return new Gson().fromJson(bufferedReader, listType);
-		} catch (Exception e) {
-			throw new RuntimeException("Could not load file with places.");
-		}
-	}
-
-
-	private static String getFirstName(String name) {
-		if (name.indexOf(' ') > -1) {
-			return name.substring(0, name.indexOf(' '));
-		}
-		return name;
-	}
-
-
-	private static String getFirstPartOfLocation(String location) {
-		if (location.indexOf(',') > -1) {
-			return location.substring(0, location.indexOf(','));
-		}
-		if (location.indexOf('/') > -1) {
-			return location.substring(0, location.indexOf('/'));
-		}
-		return location;
-	}
-
-
-	public static PredictedLocation guessLocation(String location) {
-		String firstPartOfLocation = getFirstPartOfLocation(location);
+	static PredictedLocation guessLocation(String location) {
+		String firstPartOfLocation = StringUtil.getFirstPartOfLocation(location);
 		List<PredictedLocation> matchingLocations = getMatchingLocations(firstPartOfLocation);
 		if (!matchingLocations.isEmpty()) {
 			Map<PredictedLocation, Integer> results = calculateLevenshteinDistance(matchingLocations, firstPartOfLocation);
@@ -201,9 +74,9 @@ public class TweetProcessor {
 
 	private static List<PredictedLocation> getMatchingLocations(String location) {
 		List<PredictedLocation> matchingLocations = new ArrayList<>();
-		String firstPartOfLocation = getFirstPartOfLocation(location);
+		String firstPartOfLocation = StringUtil.getFirstPartOfLocation(location);
 
-		for (PredictedLocation predictedLocation : PREDICTED_LOCATION_LIST) {
+		for (PredictedLocation predictedLocation : Config.getInstance().getPredictedLocationList()) {
 			String normalizedPlace = predictedLocation.getPlace().toLowerCase();
 			String normalizedLocation = firstPartOfLocation.toLowerCase();
 			if (normalizedPlace.contains(normalizedLocation)) {
