@@ -46,7 +46,7 @@ public class TweetProcessor {
 	private static void writeJsonOutput(Multimap<Profile, Tweet> profilesAndTweets) {
 		File file = new File("output.json");
 		try (Writer writer = new FileWriter(file)) {
-			Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
+			Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
 			gson.toJson(profilesAndTweets.asMap(), writer);
 			System.out.println("JSON file saved in: " + file.getAbsolutePath());
 		} catch (IOException e) {
