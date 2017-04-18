@@ -80,7 +80,6 @@ public class TweetProcessor {
 		return new Tweet(
 				status.getId(),
 				status.getText(),
-				status.getCreatedAt(),
 				createGeoLocation(status.getGeoLocation()),
 				createHashtags(status.getHashtagEntities())
 		);
@@ -101,8 +100,7 @@ public class TweetProcessor {
 	private static GeoLocation createGeoLocation(twitter4j.GeoLocation geoLocation) {
 		if (geoLocation != null) {
 			return new GeoLocation(geoLocation.getLatitude(), geoLocation.getLongitude());
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

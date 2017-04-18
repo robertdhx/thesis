@@ -1,6 +1,5 @@
 package data;
 
-import java.util.Date;
 import java.util.Set;
 
 
@@ -9,17 +8,14 @@ public class Tweet {
 
 	private String text;
 
-	private Date date;
-
 	private GeoLocation geolocation;
 
 	private Set<Hashtag> hashtagSet;
 
 
-	public Tweet(long id, String text, Date date, GeoLocation geolocation, Set<Hashtag> hashtagSet) {
+	public Tweet(long id, String text, GeoLocation geolocation, Set<Hashtag> hashtagSet) {
 		this.id = id;
 		this.text = text;
-		this.date = date;
 		this.geolocation = geolocation;
 		this.hashtagSet = hashtagSet;
 	}
@@ -42,16 +38,6 @@ public class Tweet {
 
 	public void setText(String text) {
 		this.text = text;
-	}
-
-
-	public Date getDate() {
-		return date;
-	}
-
-
-	public void setDate(Date date) {
-		this.date = date;
 	}
 
 
