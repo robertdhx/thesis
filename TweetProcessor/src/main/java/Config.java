@@ -37,10 +37,10 @@ class Config {
 
 	void buildFirstNamesHashSet() {
 		try (InputStream in = this.getClass().getResourceAsStream("firstnames.txt")) {
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+			BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 			Set<String> firstNames = new HashSet<>();
 			String line;
-			while ((line = bufferedReader.readLine()) != null) {
+			while ((line = br.readLine()) != null) {
 				firstNames.add(line);
 			}
 			this.nameSet = firstNames;
@@ -52,10 +52,10 @@ class Config {
 
 	void buildPredictedLocationList() {
 		try (InputStream in = this.getClass().getResourceAsStream("places.json")) {
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-			Type listType = new TypeToken<List<PredictedLocation>>() {
+			BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+			Type type = new TypeToken<List<PredictedLocation>>() {
 			}.getType();
-			this.predictedLocationList = new Gson().fromJson(bufferedReader, listType);
+			this.predictedLocationList = new Gson().fromJson(br, type);
 		} catch (IOException e) {
 			throw new RuntimeException("Could not load file with places.", e);
 		}
