@@ -19,11 +19,13 @@ class FileProcessor {
 
 	Multimap<Profile, Tweet> getProfilesAndTweets() throws IOException, TwitterException {
 		Multimap<Profile, Tweet> profilesAndTweets = HashMultimap.create();
+		int lineNumber = 0;
 
 		try (Reader reader = new FileReader(file)) {
 			BufferedReader br = new BufferedReader(reader);
 			String line;
 			while ((line = br.readLine()) != null) {
+				lineNumber++;
 				if (!containsLocation(line)) {
 					continue;
 				}
@@ -32,6 +34,9 @@ class FileProcessor {
 					Profile profile = new Profile(status.getUser());
 					Tweet tweet = new Tweet(status);
 					profilesAndTweets.put(profile, tweet);
+				}
+				if (lineNumber % 100000 == 0) {
+					System.out.println("Processed " + lineNumber + " lines...");
 				}
 			}
 		}

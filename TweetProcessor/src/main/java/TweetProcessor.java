@@ -27,6 +27,7 @@ public class TweetProcessor {
 		Multimap<Profile, Tweet> profilesAndTweets = HashMultimap.create();
 
 		for (File inputFile : fileList) {
+			System.out.println("Processing file " + inputFile.getName() + "...");
 			try {
 				FileProcessor fileProcessor = new FileProcessor(inputFile);
 				profilesAndTweets.putAll(fileProcessor.getProfilesAndTweets());
