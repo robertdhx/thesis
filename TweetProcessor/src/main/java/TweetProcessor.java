@@ -173,10 +173,11 @@ public class TweetProcessor {
 	}
 
 
-	private static PredictedLocation guessLocation(String location) {
-		List<PredictedLocation> matchingLocations = getMatchingLocations(location);
+	public static PredictedLocation guessLocation(String location) {
+		String firstPartOfLocation = getFirstPartOfLocation(location);
+		List<PredictedLocation> matchingLocations = getMatchingLocations(firstPartOfLocation);
 		if (!matchingLocations.isEmpty()) {
-			Map<PredictedLocation, Integer> results = calculateLevenshteinDistance(matchingLocations, location);
+			Map<PredictedLocation, Integer> results = calculateLevenshteinDistance(matchingLocations, firstPartOfLocation);
 			Comparator<? super Map.Entry<PredictedLocation, Integer>> valueComparator = (entry1, entry2) -> entry1.getValue().compareTo(entry2.getValue());
 			Map.Entry<PredictedLocation, Integer> lowestMapEntry = results.entrySet()
 					.stream().min(valueComparator).get();
