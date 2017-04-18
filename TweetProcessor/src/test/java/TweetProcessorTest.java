@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 public class TweetProcessorTest {
@@ -22,15 +23,11 @@ public class TweetProcessorTest {
 
 
 	@Test
-	public void testJsonInput() throws Exception {
-		Type typeOf = new TypeToken<Map<Profile, Collection<Tweet>>>() {
-		}.getType();
+	public void testDeserialization() throws Exception {
+		Type typeOf = new TypeToken<Map<Profile, Collection<Tweet>>>() { }.getType();
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
 		Map<Profile, Collection<Tweet>> test = gson.fromJson(new FileReader("output_test.json"), typeOf);
-
-		for (Profile profile : test.keySet()) {
-			System.out.println(profile.getPredictedLocation());
-		}
+		assertNotNull(test);
 	}
 }
