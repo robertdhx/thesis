@@ -26,7 +26,7 @@ class FileProcessor {
 			String line;
 			while ((line = br.readLine()) != null) {
 				if (!containsLocation(line)) {
-					break;
+					continue;
 				}
 				Status status = TwitterObjectFactory.createStatus(line);
 				if (satisfiesConditions(status)) {
