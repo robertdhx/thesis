@@ -25,13 +25,14 @@ class FileProcessor {
 			BufferedReader br = new BufferedReader(reader);
 			String line;
 			while ((line = br.readLine()) != null) {
-				if (containsLocation(line)) {
-					Status status = TwitterObjectFactory.createStatus(line);
-					if (satisfiesConditions(status)) {
-						Profile profile = new Profile(status.getUser());
-						Tweet tweet = new Tweet(status);
-						profilesAndTweets.put(profile, tweet);
-					}
+				if (!containsLocation(line)) {
+					break;
+				}
+				Status status = TwitterObjectFactory.createStatus(line);
+				if (satisfiesConditions(status)) {
+					Profile profile = new Profile(status.getUser());
+					Tweet tweet = new Tweet(status);
+					profilesAndTweets.put(profile, tweet);
 				}
 			}
 		}

@@ -3,9 +3,7 @@ import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import data.*;
-import org.apache.commons.lang3.StringUtils;
 import twitter4j.TwitterException;
-import util.StringUtil;
 
 import java.io.*;
 import java.util.*;
@@ -33,81 +31,25 @@ public class TweetProcessor {
 				FileProcessor fileProcessor = new FileProcessor(inputFile);
 				profilesAndTweets.putAll(fileProcessor.getProfilesAndTweets());
 			} catch (IOException | TwitterException e) {
-				System.out.println("Error during processing of '" + inputFile + ". Message: " + e.getMessage());
+				System.err.println("Error during processing of '" + inputFile + ". Message: " + e.getMessage());
 			}
 		}
 
-		System.out.println("\nUnique profiles: " + profilesAndTweets.keySet().size());
-		System.out.println("Unique tweets: " + profilesAndTweets.size());
+		PostProcessor postProcessor = new PostProcessor(profilesAndTweets);
+		profilesAndTweets = postProcessor.getProfilesAndTweets();
 
-		System.out.println("\nApplying rule: ignore profiles with fewer than " + config.getMinimumTweets() + " tweets...");
-		profilesAndTweets.asMap().entrySet().removeIf(e -> (e.getValue().size() < config.getMinimumTweets()));
-
-		System.out.println("\nUnique profiles: " + profilesAndTweets.keySet().size());
-		System.out.println("Unique tweets: " + profilesAndTweets.size());
-
-		System.out.println("\nApplying rule: ignore profiles without predicted location...");
-
-		profilesAndTweets.asMap().forEach((k, v) -> k.setPredictedLocation(guessLocation(k.getLocation())));
-		profilesAndTweets.asMap().entrySet().removeIf(e -> (e.getKey().getPredictedLocation() == null));
-
-		System.out.println("\nUnique profiles: " + profilesAndTweets.keySet().size());
-		System.out.println("Unique tweets: " + profilesAndTweets.size());
-
-		writeJsonOutput(profilesAndTweets.asMap());
+		writeJsonOutput(profilesAndTweets);
 	}
 
 
-	static PredictedLocation guessLocation(String location) {
-		String firstPartOfLocation = StringUtil.getFirstPartOfLocation(location);
-		List<PredictedLocation> matchingLocations = getMatchingLocations(firstPartOfLocation);
-		if (!matchingLocations.isEmpty()) {
-			Map<PredictedLocation, Integer> results = calculateLevenshteinDistance(matchingLocations, firstPartOfLocation);
-			Comparator<? super Map.Entry<PredictedLocation, Integer>> valueComparator = (entry1, entry2) -> entry1.getValue().compareTo(entry2.getValue());
-			Map.Entry<PredictedLocation, Integer> lowestMapEntry = results.entrySet()
-					.stream().min(valueComparator).get();
-			return lowestMapEntry.getKey();
-		}
-		return null;
-	}
-
-
-	private static List<PredictedLocation> getMatchingLocations(String location) {
-		List<PredictedLocation> matchingLocations = new ArrayList<>();
-		String firstPartOfLocation = StringUtil.getFirstPartOfLocation(location);
-
-		for (PredictedLocation predictedLocation : Config.getInstance().getPredictedLocationList()) {
-			String normalizedPlace = predictedLocation.getPlace().toLowerCase();
-			String normalizedLocation = firstPartOfLocation.toLowerCase();
-			if (normalizedPlace.contains(normalizedLocation)) {
-				matchingLocations.add(predictedLocation);
-			}
-		}
-		return matchingLocations;
-	}
-
-
-	private static Map<PredictedLocation, Integer> calculateLevenshteinDistance(List<PredictedLocation> matchingLocations, String firstPartOfLocation) {
-		if (!matchingLocations.isEmpty()) {
-			Map<PredictedLocation, Integer> results = new HashMap<>();
-			for (PredictedLocation predictedLocation : matchingLocations) {
-				int levenshteinDistance = StringUtils.getLevenshteinDistance(predictedLocation.getPlace(), firstPartOfLocation);
-				results.put(predictedLocation, levenshteinDistance);
-			}
-			return results;
-		}
-		return Collections.emptyMap();
-	}
-
-
-	private static void writeJsonOutput(Map<Profile, Collection<Tweet>> profileTweetMap) {
+	private static void writeJsonOutput(Multimap<Profile, Tweet> profilesAndTweets) {
 		File file = new File("output.json");
 		try (Writer writer = new FileWriter(file)) {
 			Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting().create();
-			gson.toJson(profileTweetMap, writer);
-			System.out.println("\nJSON file saved in: " + file.getAbsolutePath());
+			gson.toJson(profilesAndTweets, writer);
+			System.out.println("JSON file saved in: " + file.getAbsolutePath());
 		} catch (IOException e) {
-			System.out.println("Error writing output file: " + e.getMessage());
+			System.err.println("Error writing output file '" + file.getName() + "'. Message: " + e.getMessage());
 		}
 	}
 }
