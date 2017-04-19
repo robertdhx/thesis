@@ -24,7 +24,7 @@ class PostProcessor {
 	private void doPostProcessing() {
 		int minimumTweets = Config.getInstance().getMinimumTweets();
 		System.out.println("Removing profiles with fewer than " + minimumTweets + " tweets...");
-		profilesAndTweets.asMap().entrySet().removeIf(e -> (e.getValue().size() < Config.getInstance().getMinimumTweets()));
+		profilesAndTweets.asMap().entrySet().removeIf(e -> (e.getValue().size() < minimumTweets));
 
 		System.out.println("Attempting to set predicted location for each profile...");
 		profilesAndTweets.asMap().forEach((k, v) -> k.setPredictedLocation(guessLocation(k.getLocation())));
