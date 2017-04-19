@@ -1,8 +1,8 @@
 package data;
 
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import twitter4j.User;
 
 
 public class Profile {
@@ -25,11 +25,12 @@ public class Profile {
 	}
 
 
-	public Profile(User user) {
-		this.id = user.getId();
-		this.username = user.getScreenName();
-		this.name = user.getName();
-		this.location = user.getLocation();
+	public Profile(JsonObject jsonObject) {
+		JsonObject user = jsonObject.getAsJsonObject("user");
+		this.id = user.get("id").getAsLong();
+		this.username = user.get("screen_name").getAsString();
+		this.name = user.get("name").getAsString();
+		this.location = user.get("location").getAsString();
 	}
 
 

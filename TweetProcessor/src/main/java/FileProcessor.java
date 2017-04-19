@@ -1,6 +1,7 @@
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import data.Profile;
 import data.Tweet;
-import twitter4j.*;
 import util.StringUtil;
 
 import java.io.*;
@@ -16,23 +17,21 @@ class FileProcessor {
 	}
 
 
-	Map<Profile, List<Tweet>> getProfilesAndTweets() throws IOException, TwitterException {
-		int initSize = (int) Math.ceil(142000 / 0.75);
-		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>(initSize);
-		int lineNumber = 0;
+	Map<Profile, List<Tweet>> getProfilesAndTweets() throws IOException {
+		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
 
 		try (Reader reader = new FileReader(file)) {
 			BufferedReader br = new BufferedReader(reader);
 			String line;
 			while ((line = br.readLine()) != null) {
-				lineNumber++;
-				if (!containsLocation(line)) {
+				if (!containsLocation(line) || containsRetweet(line)) {
 					continue;
 				}
-				Status status = TwitterObjectFactory.createStatus(line);
-				if (satisfiesConditions(status)) {
-					Profile profile = new Profile(status.getUser());
-					Tweet tweet = new Tweet(status);
+				JsonObject jsonObject = new JsonParser().parse(line).getAsJsonObject();
+				Profile profile = new Profile(jsonObject);
+
+				if (isRealPerson(profile)) {
+					Tweet tweet = new Tweet(jsonObject);
 					if (profilesAndTweets.containsKey(profile)) {
 						List<Tweet> tweetList = profilesAndTweets.get(profile);
 						tweetList.add(tweet);
@@ -41,9 +40,6 @@ class FileProcessor {
 						tweetList.add(tweet);
 						profilesAndTweets.put(profile, tweetList);
 					}
-				}
-				if (lineNumber % 100000 == 0) {
-					System.out.println("Processed " + lineNumber + " lines...");
 				}
 			}
 		}
@@ -56,18 +52,13 @@ class FileProcessor {
 	}
 
 
-	private boolean satisfiesConditions(Status status) {
-		return !isRetweet(status) && isIndividual(status.getUser());
+	private boolean containsRetweet(String line) {
+		return line.contains("retweeted_status\":");
 	}
 
 
-	private boolean isRetweet(Status status) {
-		return status.isRetweet();
-	}
-
-
-	private boolean isIndividual(User user) {
-		String firstName = StringUtil.getFirstName(user.getName());
+	private boolean isRealPerson(Profile profile) {
+		String firstName = StringUtil.getFirstName(profile.getName());
 		return Config.getInstance().getFirstNamesSet().contains(firstName.toLowerCase());
 	}
 }

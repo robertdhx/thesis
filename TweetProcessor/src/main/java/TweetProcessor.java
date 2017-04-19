@@ -2,7 +2,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import data.Profile;
 import data.Tweet;
-import twitter4j.TwitterException;
 
 import java.io.*;
 import java.util.*;
@@ -19,6 +18,7 @@ public class TweetProcessor {
 		config.buildPredictedLocationSet();
 
 		List<File> fileList = new ArrayList<>();
+
 		for (String arg : args) {
 			fileList.add(new File(arg));
 		}
@@ -34,7 +34,7 @@ public class TweetProcessor {
 					tweetList.addAll(s2);
 					return tweetList;
 				}));
-			} catch (IOException | TwitterException e) {
+			} catch (IOException e) {
 				System.err.println("Error during processing of '" + inputFile + ". Message: " + e.getMessage());
 			}
 		}

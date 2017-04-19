@@ -1,9 +1,9 @@
 package data;
 
-import twitter4j.HashtagEntity;
-import twitter4j.Status;
+import com.google.gson.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Tweet {
@@ -24,11 +24,11 @@ public class Tweet {
 	}
 
 
-	public Tweet(Status status) {
-		this.id = status.getId();
-		this.text = status.getText();
-		this.geoLocation = createGeoLocation(status.getGeoLocation());
-		this.hashtagList = createHashtags(status.getHashtagEntities());
+	public Tweet(JsonObject jsonObject) {
+		this.id = jsonObject.get("id").getAsLong();
+		this.text = jsonObject.get("text").getAsString();
+		this.geoLocation = createGeoLocation(jsonObject);
+		this.hashtagList = createHashtags(jsonObject);
 	}
 
 
@@ -72,24 +72,28 @@ public class Tweet {
 	}
 
 
-	private static GeoLocation createGeoLocation(twitter4j.GeoLocation geoLocation) {
-		if (geoLocation != null) {
-			return new GeoLocation(geoLocation.getLatitude(), geoLocation.getLongitude());
-		} else {
-			return null;
+	private static GeoLocation createGeoLocation(JsonObject jsonObject) {
+		if (!jsonObject.get("geo").isJsonNull()) {
+			JsonObject geo = jsonObject.get("geo").getAsJsonObject();
+			JsonArray coordinates = geo.get("coordinates").getAsJsonArray();
+			return new GeoLocation(coordinates.get(0).getAsDouble(), coordinates.get(1).getAsDouble());
 		}
+		return null;
 	}
 
 
-	private static List<Hashtag> createHashtags(HashtagEntity[] hashtagEntities) {
-		if (hashtagEntities != null) {
-			List<Hashtag> hashtagList = new ArrayList<>();
-			for (HashtagEntity hashtagEntity : hashtagEntities) {
-				hashtagList.add(new Hashtag(hashtagEntity.getText()));
-			}
-			return hashtagList;
-		} else {
+	private static List<Hashtag> createHashtags(JsonObject jsonObject) {
+		JsonObject entities = jsonObject.getAsJsonObject("entities");
+		JsonArray hashtagEntities = entities.getAsJsonArray("hashtags");
+
+		if (hashtagEntities.size() == 0) {
 			return null;
 		}
+
+		List<Hashtag> hashtagList = new ArrayList<>();
+		for (JsonElement hashtag : hashtagEntities) {
+			hashtagList.add(new Hashtag(hashtag.getAsJsonObject().get("text").getAsString()));
+		}
+		return hashtagList;
 	}
 }

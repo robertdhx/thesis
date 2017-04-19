@@ -28,7 +28,8 @@ public class TweetProcessorTest {
 
 	@Test
 	public void testDeserialization() throws Exception {
-		Type typeOf = new TypeToken<HashMap<Profile, Collection<Tweet>>>() { }.getType();
+		Type typeOf = new TypeToken<HashMap<Profile, Collection<Tweet>>>() {
+		}.getType();
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
 		Map<Profile, Collection<Tweet>> test = gson.fromJson(new FileReader("20170419-output.json"), typeOf);
@@ -47,7 +48,8 @@ public class TweetProcessorTest {
 		config.buildFirstNamesSet();
 		config.buildPredictedLocationSet();
 
-		Type typeOf = new TypeToken<HashMap<Profile, Collection<Tweet>>>() { }.getType();
+		Type typeOf = new TypeToken<HashMap<Profile, Collection<Tweet>>>() {
+		}.getType();
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
 		Map<Profile, Collection<Tweet>> test = gson.fromJson(new FileReader("20170419-output.json"), typeOf);
@@ -83,20 +85,20 @@ public class TweetProcessorTest {
 		fileList.add(testFile);
 		fileList.add(anotherTestFile);
 
-		Map<Profile, Set<Tweet>> profilesAndTweets = new HashMap<>();
+		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
 
 		for (File file : fileList) {
 			FileProcessor fileProcessor = new FileProcessor(file);
 			fileProcessor.getProfilesAndTweets().forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
-				Set<Tweet> tweetSet = new HashSet<>(s1);
-				tweetSet.addAll(s2);
-				return tweetSet;
+				List<Tweet> tweetList = new ArrayList<>(s1);
+				tweetList.addAll(s2);
+				return tweetList;
 			}));
 		}
 		assertEquals(1, profilesAndTweets.size());
 
-		for (Set<Tweet> tweetSet : profilesAndTweets.values()) {
-			assertEquals(2, tweetSet.size());
+		for (List<Tweet> tweetList : profilesAndTweets.values()) {
+			assertEquals(2, tweetList.size());
 		}
 	}
 }
