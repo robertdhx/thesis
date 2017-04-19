@@ -29,7 +29,11 @@ public class TweetProcessor {
 			System.out.println("Processing file " + inputFile.getName() + "...");
 			try {
 				FileProcessor fileProcessor = new FileProcessor(inputFile);
-				profilesAndTweets.putAll(fileProcessor.getProfilesAndTweets());
+				fileProcessor.getProfilesAndTweets().forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
+					Set<Tweet> tweetSet = new HashSet<>(s1);
+					tweetSet.addAll(s2);
+					return tweetSet;
+				}));
 			} catch (IOException | TwitterException e) {
 				System.err.println("Error during processing of '" + inputFile + ". Message: " + e.getMessage());
 			}

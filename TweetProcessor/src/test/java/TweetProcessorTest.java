@@ -87,9 +87,16 @@ public class TweetProcessorTest {
 
 		for (File file : fileList) {
 			FileProcessor fileProcessor = new FileProcessor(file);
-			fileProcessor.getProfilesAndTweets();
-			profilesAndTweets.putAll(fileProcessor.getProfilesAndTweets());
+			fileProcessor.getProfilesAndTweets().forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
+				Set<Tweet> tweetSet = new HashSet<>(s1);
+				tweetSet.addAll(s2);
+				return tweetSet;
+			}));
 		}
 		assertEquals(1, profilesAndTweets.size());
+
+		for (Set<Tweet> tweetSet : profilesAndTweets.values()) {
+			assertEquals(2, tweetSet.size());
+		}
 	}
 }
