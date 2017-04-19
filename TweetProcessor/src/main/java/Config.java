@@ -65,4 +65,9 @@ class Config {
 	int getMinimumTweets() {
 		return minimumTweets;
 	}
+
+
+	void setMinimumTweets(int minimumTweets) {
+		this.minimumTweets = minimumTweets;
+	}
 }
