@@ -2,10 +2,7 @@ package util;
 
 public class StringUtil {
 	public static String getFirstName(String name) {
-		if (name.indexOf(' ') > -1) {
-			return name.substring(0, name.indexOf(' '));
-		}
-		return name;
+		return name.indexOf(' ') > -1 ? name.substring(0, name.indexOf(' ')) : name;
 	}
 
 

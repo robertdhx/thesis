@@ -37,9 +37,7 @@ public class TweetProcessor {
 		}
 
 		PostProcessor postProcessor = new PostProcessor(profilesAndTweets);
-		profilesAndTweets = postProcessor.getProfilesAndTweets();
-
-		writeJsonOutput(profilesAndTweets);
+		writeJsonOutput(postProcessor.getProfilesAndTweets());
 	}
 
 

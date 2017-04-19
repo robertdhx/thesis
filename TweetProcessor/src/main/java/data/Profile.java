@@ -12,18 +12,15 @@ public class Profile {
 
 	private String name;
 
-	private String description;
-
 	private String location;
 
 	private PredictedLocation predictedLocation;
 
 
-	public Profile(long id, String username, String name, String description, String location) {
+	public Profile(long id, String username, String name, String location) {
 		this.id = id;
 		this.username = username;
 		this.name = name;
-		this.description = description;
 		this.location = location;
 	}
 
@@ -32,7 +29,6 @@ public class Profile {
 		this.id = user.getId();
 		this.username = user.getScreenName();
 		this.name = user.getName();
-		this.description = user.getDescription();
 		this.location = user.getLocation();
 	}
 
@@ -64,16 +60,6 @@ public class Profile {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-
-	public String getDescription() {
-		return description;
-	}
-
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 
