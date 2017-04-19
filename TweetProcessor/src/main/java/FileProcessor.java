@@ -16,8 +16,9 @@ class FileProcessor {
 	}
 
 
-	Map<Profile, Set<Tweet>> getProfilesAndTweets() throws IOException, TwitterException {
-		Map<Profile, Set<Tweet>> profilesAndTweets = new HashMap<>();
+	Map<Profile, List<Tweet>> getProfilesAndTweets() throws IOException, TwitterException {
+		int initSize = (int) Math.ceil(142000 / 0.75);
+		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>(initSize);
 		int lineNumber = 0;
 
 		try (Reader reader = new FileReader(file)) {
@@ -33,12 +34,12 @@ class FileProcessor {
 					Profile profile = new Profile(status.getUser());
 					Tweet tweet = new Tweet(status);
 					if (profilesAndTweets.containsKey(profile)) {
-						Set<Tweet> tweetSet = profilesAndTweets.get(profile);
-						tweetSet.add(tweet);
+						List<Tweet> tweetList = profilesAndTweets.get(profile);
+						tweetList.add(tweet);
 					} else {
-						Set<Tweet> tweetSet = new HashSet<>();
-						tweetSet.add(tweet);
-						profilesAndTweets.put(profile, tweetSet);
+						List<Tweet> tweetList = new ArrayList<>();
+						tweetList.add(tweet);
+						profilesAndTweets.put(profile, tweetList);
 					}
 				}
 				if (lineNumber % 100000 == 0) {

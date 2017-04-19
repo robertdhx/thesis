@@ -23,16 +23,16 @@ public class TweetProcessor {
 			fileList.add(new File(arg));
 		}
 
-		Map<Profile, Set<Tweet>> profilesAndTweets = new HashMap<>();
+		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
 
 		for (File inputFile : fileList) {
 			System.out.println("Processing file " + inputFile.getName() + "...");
 			try {
 				FileProcessor fileProcessor = new FileProcessor(inputFile);
 				fileProcessor.getProfilesAndTweets().forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
-					Set<Tweet> tweetSet = new HashSet<>(s1);
-					tweetSet.addAll(s2);
-					return tweetSet;
+					List<Tweet> tweetList = new ArrayList<>(s1);
+					tweetList.addAll(s2);
+					return tweetList;
 				}));
 			} catch (IOException | TwitterException e) {
 				System.err.println("Error during processing of '" + inputFile + ". Message: " + e.getMessage());
@@ -44,7 +44,7 @@ public class TweetProcessor {
 	}
 
 
-	private static void writeJsonOutput(Map<Profile, Set<Tweet>> profilesAndTweets) {
+	private static void writeJsonOutput(Map<Profile, List<Tweet>> profilesAndTweets) {
 		File file = new File("output.json");
 		try (Writer writer = new FileWriter(file)) {
 			Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();

@@ -6,16 +6,16 @@ import java.util.*;
 
 
 class PostProcessor {
-	private Map<Profile, Set<Tweet>> profilesAndTweets;
+	private Map<Profile, List<Tweet>> profilesAndTweets;
 
 
-	PostProcessor(Map<Profile, Set<Tweet>> profilesAndTweets) {
+	PostProcessor(Map<Profile, List<Tweet>> profilesAndTweets) {
 		this.profilesAndTweets = profilesAndTweets;
 		doPostProcessing();
 	}
 
 
-	Map<Profile, Set<Tweet>> getProfilesAndTweets() {
+	Map<Profile, List<Tweet>> getProfilesAndTweets() {
 		return profilesAndTweets;
 	}
 
