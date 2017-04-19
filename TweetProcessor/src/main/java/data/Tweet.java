@@ -24,11 +24,11 @@ public class Tweet {
 	}
 
 
-	public Tweet(JsonObject jsonObject) {
-		this.id = jsonObject.get("id").getAsLong();
-		this.text = jsonObject.get("text").getAsString();
-		this.geoLocation = createGeoLocation(jsonObject);
-		this.hashtagList = createHashtags(jsonObject);
+	public Tweet(JsonObject fullTweet) {
+		this.id = fullTweet.get("id").getAsLong();
+		this.text = fullTweet.get("text").getAsString();
+		this.geoLocation = createGeoLocation(fullTweet);
+		this.hashtagList = createHashtags(fullTweet);
 	}
 
 
@@ -72,9 +72,9 @@ public class Tweet {
 	}
 
 
-	private static GeoLocation createGeoLocation(JsonObject jsonObject) {
-		if (!jsonObject.get("geo").isJsonNull()) {
-			JsonObject geo = jsonObject.get("geo").getAsJsonObject();
+	private static GeoLocation createGeoLocation(JsonObject fullTweet) {
+		if (!fullTweet.get("geo").isJsonNull()) {
+			JsonObject geo = fullTweet.get("geo").getAsJsonObject();
 			JsonArray coordinates = geo.get("coordinates").getAsJsonArray();
 			return new GeoLocation(coordinates.get(0).getAsDouble(), coordinates.get(1).getAsDouble());
 		}
@@ -82,8 +82,8 @@ public class Tweet {
 	}
 
 
-	private static List<Hashtag> createHashtags(JsonObject jsonObject) {
-		JsonObject entities = jsonObject.getAsJsonObject("entities");
+	private static List<Hashtag> createHashtags(JsonObject fullTweet) {
+		JsonObject entities = fullTweet.getAsJsonObject("entities");
 		JsonArray hashtagEntities = entities.getAsJsonArray("hashtags");
 
 		if (hashtagEntities.size() == 0) {

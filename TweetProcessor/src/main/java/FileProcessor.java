@@ -27,11 +27,12 @@ class FileProcessor {
 				if (!containsLocation(line) || containsRetweet(line)) {
 					continue;
 				}
-				JsonObject jsonObject = new JsonParser().parse(line).getAsJsonObject();
-				Profile profile = new Profile(jsonObject);
+				JsonObject fullTweet = new JsonParser().parse(line).getAsJsonObject();
+				JsonObject user = fullTweet.getAsJsonObject("user");
 
-				if (isRealPerson(profile)) {
-					Tweet tweet = new Tweet(jsonObject);
+				if (isRealPerson(user.get("name").getAsString())) {
+					Profile profile = new Profile(user);
+					Tweet tweet = new Tweet(fullTweet);
 					if (profilesAndTweets.containsKey(profile)) {
 						List<Tweet> tweetList = profilesAndTweets.get(profile);
 						tweetList.add(tweet);
@@ -57,8 +58,8 @@ class FileProcessor {
 	}
 
 
-	private boolean isRealPerson(Profile profile) {
-		String firstName = StringUtil.getFirstName(profile.getName());
+	private boolean isRealPerson(String name) {
+		String firstName = StringUtil.getFirstName(name);
 		return Config.getInstance().getFirstNamesSet().contains(firstName.toLowerCase());
 	}
 }

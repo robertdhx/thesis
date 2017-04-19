@@ -25,8 +25,7 @@ public class Profile {
 	}
 
 
-	public Profile(JsonObject jsonObject) {
-		JsonObject user = jsonObject.getAsJsonObject("user");
+	public Profile(JsonObject user) {
 		this.id = user.get("id").getAsLong();
 		this.username = user.get("screen_name").getAsString();
 		this.name = user.get("name").getAsString();
