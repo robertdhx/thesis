@@ -16,8 +16,8 @@ import static org.junit.Assert.assertNotNull;
 public class TweetProcessorTest {
 	@Test
 	public void testGuessLocation() throws Exception {
-		PredictedLocation predictedLocation = TweetProcessor.guessLocation("Amsterdam, The Netherlands");
-		PredictedLocation bestMatch = new PredictedLocation("Amsterdam", "Noord-Holland");
+		PredictedLocation predictedLocation = PostProcessor.guessLocation("Amsterdam, The Netherlands");
+		PredictedLocation bestMatch = new PredictedLocation("Amsterdam", "Noord-Holland", "NL");
 		assertEquals(predictedLocation, bestMatch);
 	}
 

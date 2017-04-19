@@ -38,7 +38,7 @@ class PostProcessor {
 	}
 
 
-	private static PredictedLocation guessLocation(String location) {
+	public static PredictedLocation guessLocation(String location) {
 		String firstPartOfLocation = StringUtil.getFirstPartOfLocation(location);
 		List<PredictedLocation> matchingLocations = getMatchingLocations(firstPartOfLocation);
 

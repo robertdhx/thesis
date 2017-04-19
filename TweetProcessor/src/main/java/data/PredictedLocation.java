@@ -12,7 +12,7 @@ public class PredictedLocation {
 	private String country;
 
 
-	public PredictedLocation(String place, String province) {
+	public PredictedLocation(String place, String province, String country) {
 		this.place = place;
 		this.province = province;
 		this.country = country;
