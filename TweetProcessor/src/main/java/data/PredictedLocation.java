@@ -9,10 +9,13 @@ public class PredictedLocation {
 
 	private String province;
 
+	private String country;
+
 
 	public PredictedLocation(String place, String province) {
 		this.place = place;
 		this.province = province;
+		this.country = country;
 	}
 
 
@@ -36,10 +39,21 @@ public class PredictedLocation {
 	}
 
 
+	public String getCountry() {
+		return country;
+	}
+
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+
 	@Override public int hashCode() {
 		return new HashCodeBuilder(17, 37)
 				.append(place)
 				.append(province)
+				.append(country)
 				.toHashCode();
 	}
 
@@ -55,11 +69,12 @@ public class PredictedLocation {
 		return new EqualsBuilder()
 				.append(place, predictedLocation.place)
 				.append(province, predictedLocation.province)
+				.append(country, predictedLocation.country)
 				.isEquals();
 	}
 
 
 	@Override public String toString() {
-		return this.getPlace() + " - " + this.getProvince();
+		return this.getPlace() + ", " + this.getProvince() + ", " + this.getCountry();
 	}
 }

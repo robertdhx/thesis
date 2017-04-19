@@ -61,6 +61,6 @@ class FileProcessor {
 
 	private boolean isIndividual(User user) {
 		String firstName = StringUtil.getFirstName(user.getName());
-		return Config.getInstance().getNameSet().contains(firstName.toLowerCase());
+		return Config.getInstance().getFirstNamesSet().contains(firstName.toLowerCase());
 	}
 }

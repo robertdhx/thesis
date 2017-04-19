@@ -29,8 +29,10 @@ class PostProcessor {
 		System.out.println("Attempting to set predicted location for each profile...");
 		profilesAndTweets.asMap().forEach((k, v) -> k.setPredictedLocation(guessLocation(k.getLocation())));
 
-		System.out.println("Removing profiles without a predicted location...");
-		profilesAndTweets.asMap().entrySet().removeIf(e -> (e.getKey().getPredictedLocation() == null));
+		System.out.println("Performing final clean-up...");
+		profilesAndTweets.asMap().keySet().removeIf(p -> p.getPredictedLocation() == null);
+		profilesAndTweets.asMap().keySet().removeIf(ProfilePredicates.hasBelgianLocation());
+		profilesAndTweets.asMap().keySet().removeIf(ProfilePredicates.hasEdgeCaseLocation());
 
 		System.out.println("Complete!");
 	}
@@ -54,7 +56,7 @@ class PostProcessor {
 	private static List<PredictedLocation> getMatchingLocations(String firstPartOfLocation) {
 		List<PredictedLocation> matchingLocations = new ArrayList<>();
 
-		for (PredictedLocation predictedLocation : Config.getInstance().getPredictedLocationList()) {
+		for (PredictedLocation predictedLocation : Config.getInstance().getPredictedLocationSet()) {
 			String normalizedPlace = predictedLocation.getPlace().toLowerCase();
 			String normalizedLocation = firstPartOfLocation.toLowerCase();
 			if (normalizedPlace.contains(normalizedLocation)) {

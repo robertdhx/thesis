@@ -16,8 +16,8 @@ public class TweetProcessor {
 		}
 
 		Config config = Config.getInstance();
-		config.buildFirstNamesHashSet();
-		config.buildPredictedLocationList();
+		config.buildFirstNamesSet();
+		config.buildPredictedLocationSet();
 
 		List<File> fileList = new ArrayList<>();
 		for (String arg : args) {

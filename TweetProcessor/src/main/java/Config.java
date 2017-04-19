@@ -12,9 +12,9 @@ class Config {
 
 	private int minimumTweets = 75;
 
-	private Set<String> nameSet;
+	private Set<String> firstNamesSet;
 
-	private List<PredictedLocation> predictedLocationList;
+	private Set<PredictedLocation> predictedLocationSet;
 
 
 	static Config getInstance() {
@@ -25,17 +25,17 @@ class Config {
 	}
 
 
-	Set<String> getNameSet() {
-		return nameSet;
+	Set<String> getFirstNamesSet() {
+		return firstNamesSet;
 	}
 
 
-	List<PredictedLocation> getPredictedLocationList() {
-		return predictedLocationList;
+	Set<PredictedLocation> getPredictedLocationSet() {
+		return predictedLocationSet;
 	}
 
 
-	void buildFirstNamesHashSet() {
+	void buildFirstNamesSet() {
 		try (InputStream in = this.getClass().getResourceAsStream("firstnames.txt")) {
 			BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 			Set<String> firstNames = new HashSet<>();
@@ -43,19 +43,19 @@ class Config {
 			while ((line = br.readLine()) != null) {
 				firstNames.add(line);
 			}
-			this.nameSet = firstNames;
+			this.firstNamesSet = firstNames;
 		} catch (IOException e) {
 			throw new RuntimeException("Could not load file with first names.", e);
 		}
 	}
 
 
-	void buildPredictedLocationList() {
+	void buildPredictedLocationSet() {
 		try (InputStream in = this.getClass().getResourceAsStream("places.json")) {
 			BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-			Type type = new TypeToken<List<PredictedLocation>>() {
+			Type type = new TypeToken<HashSet<PredictedLocation>>() {
 			}.getType();
-			this.predictedLocationList = new Gson().fromJson(br, type);
+			this.predictedLocationSet = new Gson().fromJson(br, type);
 		} catch (IOException e) {
 			throw new RuntimeException("Could not load file with places.", e);
 		}
