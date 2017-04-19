@@ -3,8 +3,7 @@ package data;
 import twitter4j.HashtagEntity;
 import twitter4j.Status;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 public class Tweet {
@@ -14,14 +13,14 @@ public class Tweet {
 
 	private GeoLocation geoLocation;
 
-	private Set<Hashtag> hashtagSet;
+	private List<Hashtag> hashtagList;
 
 
-	public Tweet(long id, String text, GeoLocation geoLocation, Set<Hashtag> hashtagSet) {
+	public Tweet(long id, String text, GeoLocation geoLocation, List<Hashtag> hashtagList) {
 		this.id = id;
 		this.text = text;
 		this.geoLocation = geoLocation;
-		this.hashtagSet = hashtagSet;
+		this.hashtagList = hashtagList;
 	}
 
 
@@ -29,7 +28,7 @@ public class Tweet {
 		this.id = status.getId();
 		this.text = status.getText();
 		this.geoLocation = createGeoLocation(status.getGeoLocation());
-		this.hashtagSet = createHashtags(status.getHashtagEntities());
+		this.hashtagList = createHashtags(status.getHashtagEntities());
 	}
 
 
@@ -63,13 +62,13 @@ public class Tweet {
 	}
 
 
-	public Set<Hashtag> getHashtagSet() {
-		return hashtagSet;
+	public List<Hashtag> getHashtagList() {
+		return hashtagList;
 	}
 
 
-	public void setHashtagSet(Set<Hashtag> hashtagSet) {
-		this.hashtagSet = hashtagSet;
+	public void setHashtagList(List<Hashtag> hashtagList) {
+		this.hashtagList = hashtagList;
 	}
 
 
@@ -82,13 +81,13 @@ public class Tweet {
 	}
 
 
-	private static Set<Hashtag> createHashtags(HashtagEntity[] hashtagEntities) {
+	private static List<Hashtag> createHashtags(HashtagEntity[] hashtagEntities) {
 		if (hashtagEntities != null) {
-			Set<Hashtag> hashtagSet = new HashSet<>();
+			List<Hashtag> hashtagList = new ArrayList<>();
 			for (HashtagEntity hashtagEntity : hashtagEntities) {
-				hashtagSet.add(new Hashtag(hashtagEntity.getText()));
+				hashtagList.add(new Hashtag(hashtagEntity.getText()));
 			}
-			return hashtagSet;
+			return hashtagList;
 		} else {
 			return null;
 		}
