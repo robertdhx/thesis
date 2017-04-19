@@ -1,11 +1,10 @@
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import data.Profile;
 import data.Tweet;
 import twitter4j.*;
 import util.StringUtil;
 
 import java.io.*;
+import java.util.*;
 
 
 class FileProcessor {
@@ -17,8 +16,8 @@ class FileProcessor {
 	}
 
 
-	Multimap<Profile, Tweet> getProfilesAndTweets() throws IOException, TwitterException {
-		Multimap<Profile, Tweet> profilesAndTweets = HashMultimap.create();
+	Map<Profile, Set<Tweet>> getProfilesAndTweets() throws IOException, TwitterException {
+		Map<Profile, Set<Tweet>> profilesAndTweets = new HashMap<>();
 		int lineNumber = 0;
 
 		try (Reader reader = new FileReader(file)) {
@@ -33,7 +32,14 @@ class FileProcessor {
 				if (satisfiesConditions(status)) {
 					Profile profile = new Profile(status.getUser());
 					Tweet tweet = new Tweet(status);
-					profilesAndTweets.put(profile, tweet);
+					if (profilesAndTweets.containsKey(profile)) {
+						Set<Tweet> tweetSet = profilesAndTweets.get(profile);
+						tweetSet.add(tweet);
+					} else {
+						Set<Tweet> tweetSet = new HashSet<>();
+						tweetSet.add(tweet);
+						profilesAndTweets.put(profile, tweetSet);
+					}
 				}
 				if (lineNumber % 100000 == 0) {
 					System.out.println("Processed " + lineNumber + " lines...");

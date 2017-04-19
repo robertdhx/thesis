@@ -1,4 +1,3 @@
-import com.google.common.collect.Multimap;
 import data.*;
 import org.apache.commons.lang3.StringUtils;
 import util.StringUtil;
@@ -7,16 +6,16 @@ import java.util.*;
 
 
 class PostProcessor {
-	private Multimap<Profile, Tweet> profilesAndTweets;
+	private Map<Profile, Set<Tweet>> profilesAndTweets;
 
 
-	PostProcessor(Multimap<Profile, Tweet> profilesAndTweets) {
+	PostProcessor(Map<Profile, Set<Tweet>> profilesAndTweets) {
 		this.profilesAndTweets = profilesAndTweets;
 		doPostProcessing();
 	}
 
 
-	Multimap<Profile, Tweet> getProfilesAndTweets() {
+	Map<Profile, Set<Tweet>> getProfilesAndTweets() {
 		return profilesAndTweets;
 	}
 
@@ -24,15 +23,15 @@ class PostProcessor {
 	private void doPostProcessing() {
 		int minimumTweets = Config.getInstance().getMinimumTweets();
 		System.out.println("Removing profiles with fewer than " + minimumTweets + " tweets...");
-		profilesAndTweets.asMap().entrySet().removeIf(e -> (e.getValue().size() < minimumTweets));
+		profilesAndTweets.entrySet().removeIf(e -> (e.getValue().size() < minimumTweets));
 
 		System.out.println("Attempting to set predicted location for each profile...");
-		profilesAndTweets.asMap().forEach((k, v) -> k.setPredictedLocation(guessLocation(k.getLocation())));
+		profilesAndTweets.forEach((k, v) -> k.setPredictedLocation(guessLocation(k.getLocation())));
 
 		System.out.println("Performing final clean-up...");
-		profilesAndTweets.asMap().keySet().removeIf(p -> p.getPredictedLocation() == null);
-		profilesAndTweets.asMap().keySet().removeIf(ProfilePredicates.hasBelgianLocation());
-		profilesAndTweets.asMap().keySet().removeIf(ProfilePredicates.hasEdgeCaseLocation());
+		profilesAndTweets.keySet().removeIf(p -> p.getPredictedLocation() == null);
+		profilesAndTweets.keySet().removeIf(ProfilePredicates.hasBelgianLocation());
+		profilesAndTweets.keySet().removeIf(ProfilePredicates.hasEdgeCaseLocation());
 
 		System.out.println("Complete!");
 	}
@@ -47,7 +46,9 @@ class PostProcessor {
 			Comparator<? super Map.Entry<PredictedLocation, Integer>> valueComparator = (entry1, entry2) -> entry1.getValue().compareTo(entry2.getValue());
 			Map.Entry<PredictedLocation, Integer> lowestMapEntry = results.entrySet()
 					.stream().min(valueComparator).get();
-			return lowestMapEntry.getKey();
+			if (lowestMapEntry.getValue() < 5) {
+				return lowestMapEntry.getKey();
+			}
 		}
 		return null;
 	}

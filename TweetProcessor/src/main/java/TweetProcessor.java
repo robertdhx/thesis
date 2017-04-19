@@ -1,8 +1,7 @@
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import data.*;
+import data.Profile;
+import data.Tweet;
 import twitter4j.TwitterException;
 
 import java.io.*;
@@ -24,7 +23,7 @@ public class TweetProcessor {
 			fileList.add(new File(arg));
 		}
 
-		Multimap<Profile, Tweet> profilesAndTweets = HashMultimap.create();
+		Map<Profile, Set<Tweet>> profilesAndTweets = new HashMap<>();
 
 		for (File inputFile : fileList) {
 			System.out.println("Processing file " + inputFile.getName() + "...");
@@ -41,11 +40,11 @@ public class TweetProcessor {
 	}
 
 
-	private static void writeJsonOutput(Multimap<Profile, Tweet> profilesAndTweets) {
+	private static void writeJsonOutput(Map<Profile, Set<Tweet>> profilesAndTweets) {
 		File file = new File("output.json");
 		try (Writer writer = new FileWriter(file)) {
 			Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-			gson.toJson(profilesAndTweets.asMap(), writer);
+			gson.toJson(profilesAndTweets, writer);
 			System.out.println("JSON file saved in: " + file.getAbsolutePath());
 		} catch (IOException e) {
 			System.err.println("Error writing output file '" + file.getName() + "'. Message: " + e.getMessage());
