@@ -1,28 +1,70 @@
 package tweetprocessor;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.apache.commons.cli.*;
 import tweetprocessor.data.Profile;
 import tweetprocessor.data.Tweet;
+import tweetprocessor.util.JsonUtil;
 
-import java.io.*;
+import java.io.File;
 import java.util.*;
 
 
 public class TweetProcessor {
-	public static void main(String[] args) {
-		if (args.length == 0) {
-			throw new RuntimeException("Argument input files are missing.");
-		}
+	private static final int SCREEN_WIDTH_COLUMNS = 79;
 
+
+	public static void main(String[] args) {
+		Options options = setCliOptions();
+		CommandLineParser parser = new DefaultParser();
+
+		try {
+			CommandLine cmd = parser.parse(options, args);
+
+			if (cmd.hasOption("tweets")) {
+				String[] arguments = cmd.getOptionValues("tweets");
+				processTwitterData(arguments);
+			}
+			if (cmd.hasOption("dataset")) {
+				processDataset();
+			}
+		} catch (ParseException e) {
+			System.out.println(e.getMessage());
+			showHelp(options);
+		}
+	}
+
+
+	private static Options setCliOptions() {
+		Options options = new Options();
+		Option tweets = Option.builder("tweets")
+				.desc("process tweets")
+				.numberOfArgs(6)
+				.valueSeparator(' ')
+				.argName("files")
+				.build();
+		options.addOption(tweets);
+		options.addOption("dataset", "process dataset of profiles and tweets");
+		options.addOption("help", "print this message");
+		return options;
+	}
+
+
+	private static void showHelp(Options options) {
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.setWidth(SCREEN_WIDTH_COLUMNS);
+		formatter.printHelp("TweetProcessor [option] [argument]", options);
+	}
+
+
+	private static void processTwitterData(String[] arguments) {
 		Config config = Config.getInstance();
 		config.buildFirstNamesSet();
 		config.buildPredictedLocationSet();
 
 		List<File> fileList = new ArrayList<>();
 
-		for (String arg : args) {
-			fileList.add(new File(arg));
+		for (String argument : arguments) {
+			fileList.add(new File(argument));
 		}
 
 		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
@@ -37,18 +79,13 @@ public class TweetProcessor {
 			}));
 		}
 		Processor postProcessor = new PostProcessor(profilesAndTweets);
-		writeJsonOutput(postProcessor.getProfilesAndTweets());
+		JsonUtil.writeJsonOutput(postProcessor.getProfilesAndTweets());
 	}
 
 
-	private static void writeJsonOutput(Map<Profile, List<Tweet>> profilesAndTweets) {
-		File file = new File("output.json");
-		try (Writer writer = new FileWriter(file)) {
-			Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-			gson.toJson(profilesAndTweets, writer);
-			System.out.println("JSON file saved in: " + file.getAbsolutePath());
-		} catch (IOException e) {
-			System.err.println("Error writing output file '" + file.getName() + "'. Message: " + e.getMessage());
-		}
+	private static void processDataset() {
+		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
+		File datasetFile = new File("dataset.json");
+		Processor datasetProcessor = new DatasetProcessor(datasetFile);
 	}
 }
