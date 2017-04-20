@@ -57,7 +57,7 @@ public class Tweet {
 	}
 
 
-	public void setGeoLocation(GeoLocation geolocation) {
+	public void setGeoLocation(GeoLocation geoLocation) {
 		this.geoLocation = geoLocation;
 	}
 

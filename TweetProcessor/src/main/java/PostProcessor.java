@@ -43,7 +43,7 @@ class PostProcessor {
 
 		if (!matchingLocations.isEmpty()) {
 			Map<PredictedLocation, Integer> results = calculateBestMatch(matchingLocations, firstPartOfLocation);
-			Comparator<? super Map.Entry<PredictedLocation, Integer>> valueComparator = (entry1, entry2) -> entry1.getValue().compareTo(entry2.getValue());
+			Comparator<? super Map.Entry<PredictedLocation, Integer>> valueComparator = Comparator.comparing(Map.Entry::getValue);
 			Map.Entry<PredictedLocation, Integer> lowestMapEntry = results.entrySet()
 					.stream().min(valueComparator).get();
 			if (lowestMapEntry.getValue() < 5) {
