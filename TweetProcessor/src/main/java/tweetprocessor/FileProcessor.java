@@ -2,8 +2,8 @@ package tweetprocessor;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import tweetprocessor.data.Profile;
-import tweetprocessor.data.Tweet;
+import tweetprocessor.data.*;
+import tweetprocessor.util.LocationUtil;
 import tweetprocessor.util.StringUtil;
 
 import java.io.*;
@@ -21,6 +21,7 @@ class FileProcessor implements Processor {
 		this.file = file;
 		doProcessing();
 	}
+
 
 	public Map<Profile, List<Tweet>> getProfilesAndTweets() {
 		return profilesAndTweets;
@@ -51,6 +52,13 @@ class FileProcessor implements Processor {
 					}
 				}
 			}
+			System.out.println("Attempting to set predicted location for each profile...");
+			profilesAndTweets.forEach((k, v) -> k.setPredictedLocation(LocationUtil.guessLocation(k.getLocation())));
+
+			System.out.println("Performing clean-up...");
+			profilesAndTweets.keySet().removeIf(p -> p.getPredictedLocation() == null);
+			profilesAndTweets.keySet().removeIf(ProfilePredicates.hasBelgianLocation());
+			profilesAndTweets.keySet().removeIf(ProfilePredicates.hasEdgeCaseLocation());
 		} catch (IOException e) {
 			System.out.println("IO error: " + e.getMessage());
 		}

@@ -9,7 +9,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 
-class Config {
+public class Config {
 	private static Config instance;
 
 	private int minimumTweets = 70;
@@ -27,12 +27,12 @@ class Config {
 	}
 
 
-	Set<String> getFirstNamesSet() {
+	public Set<String> getFirstNamesSet() {
 		return firstNamesSet;
 	}
 
 
-	Set<PredictedLocation> getPredictedLocationSet() {
+	public Set<PredictedLocation> getPredictedLocationSet() {
 		return predictedLocationSet;
 	}
 
