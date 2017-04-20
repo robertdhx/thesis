@@ -94,7 +94,7 @@ public class TweetProcessorTest {
 		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
 
 		for (File file : fileList) {
-			FileProcessor fileProcessor = new FileProcessor(file);
+			Processor fileProcessor = new FileProcessor(new HashMap<>(), file);
 			fileProcessor.getProfilesAndTweets().forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
 				List<Tweet> tweetList = new ArrayList<>(s1);
 				tweetList.addAll(s2);

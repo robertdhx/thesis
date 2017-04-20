@@ -8,18 +8,24 @@ import java.io.*;
 import java.util.*;
 
 
-class FileProcessor {
+class FileProcessor implements Processor {
+	private Map<Profile, List<Tweet>> profilesAndTweets;
+
 	private File file;
 
 
-	FileProcessor(File file) {
+	FileProcessor(Map<Profile, List<Tweet>> profilesAndTweets, File file) {
+		this.profilesAndTweets = profilesAndTweets;
 		this.file = file;
+		doProcessing();
+	}
+
+	public Map<Profile, List<Tweet>> getProfilesAndTweets() {
+		return profilesAndTweets;
 	}
 
 
-	Map<Profile, List<Tweet>> getProfilesAndTweets() throws IOException {
-		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
-
+	public void doProcessing() {
 		try (Reader reader = new FileReader(file)) {
 			BufferedReader br = new BufferedReader(reader);
 			String line;
@@ -43,8 +49,9 @@ class FileProcessor {
 					}
 				}
 			}
+		} catch (IOException e) {
+			System.out.println("IO error: " + e.getMessage());
 		}
-		return profilesAndTweets;
 	}
 
 

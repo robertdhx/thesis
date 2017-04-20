@@ -27,19 +27,14 @@ public class TweetProcessor {
 
 		for (File inputFile : fileList) {
 			System.out.println("Processing file " + inputFile.getName() + "...");
-			try {
-				FileProcessor fileProcessor = new FileProcessor(inputFile);
-				fileProcessor.getProfilesAndTweets().forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
-					List<Tweet> tweetList = new ArrayList<>(s1);
-					tweetList.addAll(s2);
-					return tweetList;
-				}));
-			} catch (IOException e) {
-				System.err.println("Error during processing of '" + inputFile + ". Message: " + e.getMessage());
-			}
+			Processor fileProcessor = new FileProcessor(new HashMap<>(), inputFile);
+			fileProcessor.getProfilesAndTweets().forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
+				List<Tweet> tweetList = new ArrayList<>(s1);
+				tweetList.addAll(s2);
+				return tweetList;
+			}));
 		}
-
-		PostProcessor postProcessor = new PostProcessor(profilesAndTweets);
+		Processor postProcessor = new PostProcessor(profilesAndTweets);
 		writeJsonOutput(postProcessor.getProfilesAndTweets());
 	}
 

@@ -5,22 +5,22 @@ import util.StringUtil;
 import java.util.*;
 
 
-class PostProcessor {
+class PostProcessor implements Processor {
 	private Map<Profile, List<Tweet>> profilesAndTweets;
 
 
 	PostProcessor(Map<Profile, List<Tweet>> profilesAndTweets) {
 		this.profilesAndTweets = profilesAndTweets;
-		doPostProcessing();
+		doProcessing();
 	}
 
 
-	Map<Profile, List<Tweet>> getProfilesAndTweets() {
+	public Map<Profile, List<Tweet>> getProfilesAndTweets() {
 		return profilesAndTweets;
 	}
 
 
-	private void doPostProcessing() {
+	public void doProcessing() {
 		int minimumTweets = Config.getInstance().getMinimumTweets();
 		System.out.println("Removing profiles with fewer than " + minimumTweets + " tweets...");
 		profilesAndTweets.entrySet().removeIf(e -> (e.getValue().size() < minimumTweets));
