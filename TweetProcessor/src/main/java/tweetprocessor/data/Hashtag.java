@@ -1,4 +1,4 @@
-package data;
+package tweetprocessor.data;
 
 public class Hashtag {
 	private String text;

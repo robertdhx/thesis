@@ -1,6 +1,8 @@
+package tweetprocessor;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import data.PredictedLocation;
+import tweetprocessor.data.PredictedLocation;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -17,7 +19,7 @@ class Config {
 	private Set<PredictedLocation> predictedLocationSet;
 
 
-	static Config getInstance() {
+	public static Config getInstance() {
 		if (instance == null) {
 			instance = new Config();
 		}
@@ -36,7 +38,7 @@ class Config {
 
 
 	void buildFirstNamesSet() {
-		try (InputStream in = this.getClass().getResourceAsStream("firstnames.txt")) {
+		try (InputStream in = this.getClass().getResourceAsStream("/firstnames.txt")) {
 			BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 			Set<String> firstNames = new HashSet<>();
 			String line;
@@ -51,7 +53,7 @@ class Config {
 
 
 	void buildPredictedLocationSet() {
-		try (InputStream in = this.getClass().getResourceAsStream("places.json")) {
+		try (InputStream in = this.getClass().getResourceAsStream("/places.json")) {
 			BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 			Type type = new TypeToken<HashSet<PredictedLocation>>() {
 			}.getType();

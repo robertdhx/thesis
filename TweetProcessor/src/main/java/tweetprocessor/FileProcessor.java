@@ -1,8 +1,10 @@
+package tweetprocessor;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import data.Profile;
-import data.Tweet;
-import util.StringUtil;
+import tweetprocessor.data.Profile;
+import tweetprocessor.data.Tweet;
+import tweetprocessor.util.StringUtil;
 
 import java.io.*;
 import java.util.*;

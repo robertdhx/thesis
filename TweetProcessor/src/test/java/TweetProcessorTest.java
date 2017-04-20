@@ -1,7 +1,8 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import data.*;
+import tweetprocessor.*;
+import tweetprocessor.data.*;
 import org.junit.Test;
 
 import java.io.*;

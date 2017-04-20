@@ -1,4 +1,4 @@
-package util;
+package tweetprocessor.util;
 
 public class StringUtil {
 	public static String getFirstName(String name) {

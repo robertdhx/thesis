@@ -1,4 +1,4 @@
-package data;
+package tweetprocessor.data;
 
 import java.util.function.Predicate;
 

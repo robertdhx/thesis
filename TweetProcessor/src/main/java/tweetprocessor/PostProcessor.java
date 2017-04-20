@@ -1,6 +1,8 @@
-import data.*;
+package tweetprocessor;
+
+import tweetprocessor.data.*;
 import org.apache.commons.lang3.StringUtils;
-import util.StringUtil;
+import tweetprocessor.util.StringUtil;
 
 import java.util.*;
 

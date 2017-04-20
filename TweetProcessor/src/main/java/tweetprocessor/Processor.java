@@ -1,5 +1,7 @@
-import data.Profile;
-import data.Tweet;
+package tweetprocessor;
+
+import tweetprocessor.data.Profile;
+import tweetprocessor.data.Tweet;
 
 import java.util.List;
 import java.util.Map;

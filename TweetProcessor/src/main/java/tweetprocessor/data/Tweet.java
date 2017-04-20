@@ -1,4 +1,4 @@
-package data;
+package tweetprocessor.data;
 
 import com.google.gson.*;
 
