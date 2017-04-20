@@ -5254,4 +5254,6 @@
 {"place":"Zwevegem","province":"VWV","country":"BE"},
 {"place":"Zwevezele","province":"VWV","country":"BE"},
 {"place":"Zwijnaarde","province":"VOV","country":"BE"},
-{"place":"Zwijndrecht","province":"VAN","country":"BE"}]
+{"place":"Zwijndrecht","province":"VAN","country":"BE"}
+{"place":"Den Haag","province":"ZH","country":"NL"},
+{"place":"Den Bosch","province":"NB","country":"NL"}]

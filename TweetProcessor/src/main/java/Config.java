@@ -10,7 +10,7 @@ import java.util.*;
 class Config {
 	private static Config instance;
 
-	private int minimumTweets = 75;
+	private int minimumTweets = 70;
 
 	private Set<String> firstNamesSet;
 

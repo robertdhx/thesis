@@ -4,8 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import data.*;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -32,12 +31,19 @@ public class TweetProcessorTest {
 		}.getType();
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
-		Map<Profile, Collection<Tweet>> test = gson.fromJson(new FileReader("20170419-output.json"), typeOf);
+		Map<Profile, Collection<Tweet>> test = gson.fromJson(new FileReader("20170419-output-75.json"), typeOf);
 
-		for (Map.Entry<Profile, Collection<Tweet>> entry : test.entrySet()) {
-			Profile profile = entry.getKey();
-			System.out.println(profile.getLocation() + ", predicted: " + profile.getPredictedLocation());
+		System.out.println("Number of profiles: " + test.keySet().size());
+
+		File file = new File("foo.txt");
+		try (FileWriter writer = new FileWriter(file)) {
+			System.out.print("Writing raw... ");
+			for (Map.Entry<Profile, Collection<Tweet>> entry : test.entrySet()) {
+				Profile profile = entry.getKey();
+				writer.write(profile.getLocation() + ", predicted: " + profile.getPredictedLocation() + "\n");
+			}
 		}
+
 		assertNotNull(test);
 	}
 
@@ -99,6 +105,19 @@ public class TweetProcessorTest {
 
 		for (List<Tweet> tweetList : profilesAndTweets.values()) {
 			assertEquals(2, tweetList.size());
+		}
+	}
+
+
+	@Test
+	public void checkShortPredictedLocations() throws Exception {
+		Config config = Config.getInstance();
+		config.buildPredictedLocationSet();
+
+		for (PredictedLocation predictedLocation : config.getPredictedLocationSet()) {
+			if (predictedLocation.getPlace().length() <= 2 && predictedLocation.getCountry().equals("NL")) {
+				System.out.println(predictedLocation);
+			}
 		}
 	}
 }
