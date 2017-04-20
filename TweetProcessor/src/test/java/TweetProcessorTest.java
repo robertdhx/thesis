@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import tweetprocessor.*;
 import tweetprocessor.data.*;
 import org.junit.Test;
+import tweetprocessor.util.LocationUtil;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -20,7 +21,7 @@ public class TweetProcessorTest {
 		config.buildFirstNamesSet();
 		config.buildPredictedLocationSet();
 
-		PredictedLocation predictedLocation = PostProcessor.guessLocation("Amsterdam, The Netherlands");
+		PredictedLocation predictedLocation = LocationUtil.guessLocation("Amsterdam, The Netherlands");
 		PredictedLocation bestMatch = new PredictedLocation("Amsterdam", "NH", "NL");
 		assertEquals(predictedLocation, bestMatch);
 	}
@@ -55,8 +56,7 @@ public class TweetProcessorTest {
 		config.buildFirstNamesSet();
 		config.buildPredictedLocationSet();
 
-		Type typeOf = new TypeToken<HashMap<Profile, Collection<Tweet>>>() {
-		}.getType();
+		Type typeOf = new TypeToken<HashMap<Profile, Collection<Tweet>>>() { }.getType();
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
 		Map<Profile, Collection<Tweet>> test = gson.fromJson(new FileReader("20170419-output.json"), typeOf);
@@ -66,7 +66,7 @@ public class TweetProcessorTest {
 		for (Map.Entry<Profile, Collection<Tweet>> entry : test.entrySet()) {
 			Profile profile = entry.getKey();
 			// System.out.println("Old: " + profile.getLocation() + ", predicted: " + profile.getPredictedLocation());
-			profile.setPredictedLocation(PostProcessor.guessLocation(profile.getLocation()));
+			profile.setPredictedLocation(LocationUtil.guessLocation(profile.getLocation()));
 			// System.out.println("New: " + profile.getLocation() + ", predicted: " + profile.getPredictedLocation());
 		}
 		test.keySet().removeIf(p -> p.getPredictedLocation() == null);

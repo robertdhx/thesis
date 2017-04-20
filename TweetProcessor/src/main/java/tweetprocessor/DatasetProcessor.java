@@ -15,7 +15,7 @@ public class DatasetProcessor implements Processor {
 	private File file;
 
 
-	public DatasetProcessor(File file) {
+	DatasetProcessor(File file) {
 		this.file = file;
 		doProcessing();
 	}
@@ -27,6 +27,8 @@ public class DatasetProcessor implements Processor {
 
 
 	public void doProcessing() {
+
+
 		throw new NotImplementedException();
 	}
 }

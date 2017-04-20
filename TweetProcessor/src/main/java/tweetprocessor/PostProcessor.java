@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 
-class PostProcessor implements Processor {
+public class PostProcessor implements Processor {
 	private Map<Profile, List<Tweet>> profilesAndTweets;
 
 

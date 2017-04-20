@@ -10,13 +10,13 @@ import java.io.*;
 import java.util.*;
 
 
-class FileProcessor implements Processor {
+public class FileProcessor implements Processor {
 	private Map<Profile, List<Tweet>> profilesAndTweets;
 
 	private File file;
 
 
-	FileProcessor(Map<Profile, List<Tweet>> profilesAndTweets, File file) {
+	public FileProcessor(Map<Profile, List<Tweet>> profilesAndTweets, File file) {
 		this.profilesAndTweets = profilesAndTweets;
 		this.file = file;
 		doProcessing();
