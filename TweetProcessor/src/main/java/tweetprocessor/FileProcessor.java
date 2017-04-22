@@ -29,6 +29,7 @@ public class FileProcessor implements Processor {
 
 
 	public void doProcessing() {
+		System.out.println("Processing file " + file.getName() + "...");
 		try (Reader reader = new FileReader(file)) {
 			BufferedReader br = new BufferedReader(reader);
 			String line;

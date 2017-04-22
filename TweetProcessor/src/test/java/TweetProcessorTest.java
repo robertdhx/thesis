@@ -130,4 +130,49 @@ public class TweetProcessorTest {
 			}
 		}
 	}
+
+
+	@Test
+	public void mergeFiles() throws Exception {
+		File april = new File("output_april.json");
+		File may = new File("output_may.json");
+		File june = new File("output_june.json");
+		File july = new File("output_july.json");
+		File august = new File("output_august.json");
+		File september = new File("output_september.json");
+		File october = new File("output_october.json");
+		File november = new File("output_november.json");
+		File december = new File("output_december.json");
+		File january = new File("output_january.json");
+		File february = new File("output_february.json");
+		File march = new File("output_march.json");
+
+		List<File> fileList = new ArrayList<>();
+		fileList.add(april);
+		fileList.add(may);
+		fileList.add(june);
+		fileList.add(july);
+		fileList.add(august);
+		fileList.add(september);
+		fileList.add(october);
+		fileList.add(november);
+		fileList.add(december);
+		fileList.add(january);
+		fileList.add(february);
+		fileList.add(march);
+
+		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
+		System.out.println("Merging results...");
+
+		for (File file : fileList) {
+			JsonUtil.readJsonOutput(file).forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
+				List<Tweet> tweetList = new ArrayList<>(s1);
+				tweetList.addAll(s2);
+				return tweetList;
+			}));
+		}
+
+		Processor postProcessor = new PostProcessor(profilesAndTweets);
+		JsonUtil.writeJsonOutput(postProcessor.getProfilesAndTweets(), "merged.json");
+	}
 }

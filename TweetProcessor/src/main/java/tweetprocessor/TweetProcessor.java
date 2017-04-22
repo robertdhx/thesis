@@ -68,7 +68,6 @@ public class TweetProcessor {
 		}
 
 		for (File inputFile : fileList) {
-			System.out.println("Processing file " + inputFile.getName() + "...");
 			Processor fileProcessor = new FileProcessor(new HashMap<>(), inputFile);
 			JsonUtil.writeJsonOutput(fileProcessor.getProfilesAndTweets(), inputFile.getName());
 		}
