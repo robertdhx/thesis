@@ -13,7 +13,7 @@ public class ProfilePredicates {
 
 
 	public static Predicate<Profile> hasEdgeCaseLocation() {
-		return p -> p.getPredictedLocation().getPlace().equals("Nederland") ||
+		return p -> p.getLocation().toLowerCase().equals("nederland") ||
 				p.getLocation().toLowerCase().equals("hier") ||
 				p.getLocation().toLowerCase().equals("aarde") ||
 				p.getLocation().toLowerCase().equals("nl") ||

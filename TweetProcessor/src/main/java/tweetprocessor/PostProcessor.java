@@ -11,7 +11,7 @@ public class PostProcessor implements Processor {
 	private Map<Profile, List<Tweet>> profilesAndTweets;
 
 
-	PostProcessor(Map<Profile, List<Tweet>> profilesAndTweets) {
+	public PostProcessor(Map<Profile, List<Tweet>> profilesAndTweets) {
 		this.profilesAndTweets = profilesAndTweets;
 		doProcessing();
 	}

@@ -5256,4 +5256,14 @@
 {"place":"Zwijnaarde","province":"VOV","country":"BE"},
 {"place":"Zwijndrecht","province":"VAN","country":"BE"},
 {"place":"Den Haag","province":"ZH","country":"NL"},
-{"place":"Den Bosch","province":"NB","country":"NL"}]
+{"place":"Den Bosch","province":"NB","country":"NL"},
+{"place":"Drenthe","province":"DR","country":"NL"},
+{"place":"Friesland","province":"FR","country":"NL"},
+{"place":"Overijssel","province":"OV","country":"NL"},
+{"place":"Limburg","province":"LI","country":"NL"},
+{"place":"Gelderland","province":"GE","country":"NL"},
+{"place":"Noord-Brabant","province":"NB","country":"NL"},
+{"place":"Zeeland","province":"ZE","country":"NL"},
+{"place":"Flevoland","province":"FL","country":"NL"},
+{"place":"Noord-Holland","province":"NH","country":"NL"},
+{"place":"Zuid-Holland","province":"ZH","country":"NL"}]

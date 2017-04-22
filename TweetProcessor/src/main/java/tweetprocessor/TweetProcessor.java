@@ -38,7 +38,7 @@ public class TweetProcessor {
 		Options options = new Options();
 		Option tweets = Option.builder("tweets")
 				.desc("process tweets")
-				.numberOfArgs(6)
+				.hasArgs()
 				.valueSeparator(' ')
 				.argName("files")
 				.build();
@@ -67,25 +67,32 @@ public class TweetProcessor {
 			fileList.add(new File(argument));
 		}
 
-		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
-
 		for (File inputFile : fileList) {
 			System.out.println("Processing file " + inputFile.getName() + "...");
 			Processor fileProcessor = new FileProcessor(new HashMap<>(), inputFile);
-			fileProcessor.getProfilesAndTweets().forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
+			JsonUtil.writeJsonOutput(fileProcessor.getProfilesAndTweets(), inputFile.getName());
+		}
+
+		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
+		System.out.println("Merging results...");
+
+		for (File inputFile : fileList) {
+			File outputFile = new File("output_" + inputFile.getName());
+			JsonUtil.readJsonOutput(outputFile).forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
 				List<Tweet> tweetList = new ArrayList<>(s1);
 				tweetList.addAll(s2);
 				return tweetList;
 			}));
 		}
+
 		Processor postProcessor = new PostProcessor(profilesAndTweets);
-		JsonUtil.writeJsonOutput(postProcessor.getProfilesAndTweets());
+		JsonUtil.writeJsonOutput(postProcessor.getProfilesAndTweets(), "merged.json");
 	}
 
 
 	private static void processDataset() {
 		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
-		File datasetFile = new File("dataset.json");
+		File datasetFile = new File("20170421-output-70.json");
 		Processor datasetProcessor = new DatasetProcessor(datasetFile);
 	}
 }

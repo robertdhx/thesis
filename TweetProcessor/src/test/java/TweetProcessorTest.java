@@ -1,9 +1,10 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import org.junit.Test;
 import tweetprocessor.*;
 import tweetprocessor.data.*;
-import org.junit.Test;
+import tweetprocessor.util.JsonUtil;
 import tweetprocessor.util.LocationUtil;
 
 import java.io.*;
@@ -21,8 +22,8 @@ public class TweetProcessorTest {
 		config.buildFirstNamesSet();
 		config.buildPredictedLocationSet();
 
-		PredictedLocation predictedLocation = LocationUtil.guessLocation("Amsterdam, The Netherlands");
-		PredictedLocation bestMatch = new PredictedLocation("Amsterdam", "NH", "NL");
+		PredictedLocation predictedLocation = LocationUtil.guessLocation("Mechelen");
+		PredictedLocation bestMatch = new PredictedLocation("Mechelen", "LI", "NL");
 		assertEquals(predictedLocation, bestMatch);
 	}
 
@@ -92,16 +93,24 @@ public class TweetProcessorTest {
 		fileList.add(testFile);
 		fileList.add(anotherTestFile);
 
-		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
+		for (File inputFile : fileList) {
+			System.out.println("Processing file " + inputFile.getName() + "...");
+			Processor fileProcessor = new FileProcessor(new HashMap<>(), inputFile);
+			JsonUtil.writeJsonOutput(fileProcessor.getProfilesAndTweets(), inputFile.getName());
+		}
 
-		for (File file : fileList) {
-			Processor fileProcessor = new FileProcessor(new HashMap<>(), file);
-			fileProcessor.getProfilesAndTweets().forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
+		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
+		System.out.println("Merging results...");
+
+		for (File inputFile : fileList) {
+			File outputFile = new File("output_" + inputFile.getName());
+			JsonUtil.readJsonOutput(outputFile).forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
 				List<Tweet> tweetList = new ArrayList<>(s1);
 				tweetList.addAll(s2);
 				return tweetList;
 			}));
 		}
+
 		assertEquals(1, profilesAndTweets.size());
 
 		for (List<Tweet> tweetList : profilesAndTweets.values()) {
