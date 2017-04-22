@@ -13,10 +13,10 @@ public class Tweet {
 
 	private GeoLocation geoLocation;
 
-	private List<Hashtag> hashtagList;
+	private List<String> hashtagList;
 
 
-	public Tweet(long id, String text, GeoLocation geoLocation, List<Hashtag> hashtagList) {
+	public Tweet(long id, String text, GeoLocation geoLocation, List<String> hashtagList) {
 		this.id = id;
 		this.text = text;
 		this.geoLocation = geoLocation;
@@ -62,12 +62,12 @@ public class Tweet {
 	}
 
 
-	public List<Hashtag> getHashtagList() {
+	public List<String> getHashtagList() {
 		return hashtagList;
 	}
 
 
-	public void setHashtagList(List<Hashtag> hashtagList) {
+	public void setHashtagList(List<String> hashtagList) {
 		this.hashtagList = hashtagList;
 	}
 
@@ -82,7 +82,7 @@ public class Tweet {
 	}
 
 
-	private static List<Hashtag> createHashtags(JsonObject fullTweet) {
+	private static List<String> createHashtags(JsonObject fullTweet) {
 		JsonObject entities = fullTweet.getAsJsonObject("entities");
 		JsonArray hashtagEntities = entities.getAsJsonArray("hashtags");
 
@@ -90,9 +90,9 @@ public class Tweet {
 			return null;
 		}
 
-		List<Hashtag> hashtagList = new ArrayList<>();
+		List<String> hashtagList = new ArrayList<>();
 		for (JsonElement hashtag : hashtagEntities) {
-			hashtagList.add(new Hashtag(hashtag.getAsJsonObject().get("text").getAsString()));
+			hashtagList.add(hashtag.getAsJsonObject().get("text").getAsString());
 		}
 		return hashtagList;
 	}
