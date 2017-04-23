@@ -11,20 +11,20 @@ import java.util.*;
 
 
 public class FileProcessor implements Processor {
-	private Map<Profile, List<Tweet>> profilesAndTweets;
+	private Map<Long, Profile> profiles;
 
 	private File file;
 
 
-	public FileProcessor(Map<Profile, List<Tweet>> profilesAndTweets, File file) {
-		this.profilesAndTweets = profilesAndTweets;
+	public FileProcessor(Map<Long, Profile> profiles, File file) {
+		this.profiles = profiles;
 		this.file = file;
 		doProcessing();
 	}
 
 
-	public Map<Profile, List<Tweet>> getProfilesAndTweets() {
-		return profilesAndTweets;
+	public Map<Long, Profile> getProfiles() {
+		return profiles;
 	}
 
 
@@ -41,25 +41,25 @@ public class FileProcessor implements Processor {
 				JsonObject user = fullTweet.getAsJsonObject("user");
 
 				if (isRealPerson(user.get("name").getAsString())) {
-					Profile profile = new Profile(user);
 					Tweet tweet = new Tweet(fullTweet);
-					if (profilesAndTweets.containsKey(profile)) {
-						List<Tweet> tweetList = profilesAndTweets.get(profile);
-						tweetList.add(tweet);
+					long userId = user.get("id").getAsLong();
+					if (profiles.containsKey(userId)) {
+						Profile profile = profiles.get(userId);
+						profile.getTweetList().add(tweet);
 					} else {
-						List<Tweet> tweetList = new ArrayList<>();
-						tweetList.add(tweet);
-						profilesAndTweets.put(profile, tweetList);
+						Profile profile = new Profile(user);
+						profile.getTweetList().add(tweet);
+						profiles.put(profile.getId(), profile);
 					}
 				}
 			}
 			System.out.println("Attempting to set predicted location for each profile...");
-			profilesAndTweets.forEach((k, v) -> k.setPredictedLocation(LocationUtil.guessLocation(k.getLocation())));
+			profiles.values().forEach(p -> p.setPredictedLocation(LocationUtil.guessLocation(p.getLocation())));
 
 			System.out.println("Performing clean-up...");
-			profilesAndTweets.keySet().removeIf(p -> p.getPredictedLocation() == null);
-			profilesAndTweets.keySet().removeIf(ProfilePredicates.hasBelgianLocation());
-			profilesAndTweets.keySet().removeIf(ProfilePredicates.hasEdgeCaseLocation());
+			profiles.values().removeIf(p -> p.getPredictedLocation() == null);
+			profiles.values().removeIf(ProfilePredicates.hasBelgianLocation());
+			profiles.values().removeIf(ProfilePredicates.hasEdgeCaseLocation());
 		} catch (IOException e) {
 			System.out.println("IO error: " + e.getMessage());
 		}

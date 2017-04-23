@@ -1,16 +1,14 @@
 package tweetprocessor;
 
 import tweetprocessor.data.Profile;
-import tweetprocessor.data.Tweet;
 import tweetprocessor.util.JsonUtil;
 
 import java.io.File;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 
 public class DatasetProcessor implements Processor {
-	private Map<Profile, List<Tweet>> profilesAndTweets;
+	private Map<Long, Profile> profiles;
 
 	private File file;
 
@@ -21,18 +19,18 @@ public class DatasetProcessor implements Processor {
 	}
 
 
-	public Map<Profile, List<Tweet>> getProfilesAndTweets() {
-		return profilesAndTweets;
+	public Map<Long, Profile> getProfiles() {
+		return profiles;
 	}
 
 
 	public void doProcessing() {
-		profilesAndTweets = JsonUtil.readJsonOutput(file);
+		profiles = JsonUtil.readJsonOutput(file);
 		System.out.println("Normalizing number of tweets...");
 
-		Random random = new Random();
+		/*Random random = new Random();
 
-		for (List<Tweet> tweetList : profilesAndTweets.values()) {
+		for (List<Tweet> tweetList : profiles.values()) {
 			while (tweetList.size() > 70) {
 				tweetList.remove(random.nextInt(tweetList.size()));
 			}
@@ -56,10 +54,10 @@ public class DatasetProcessor implements Processor {
 		}
 
 		System.out.println("check!");
+*/
 
 
-
-		System.out.println("Number of profiles: " + profilesAndTweets.keySet().size());
+		// System.out.println("Number of profiles: " + profilesAndTweets.keySet().size());
 
 	}
 

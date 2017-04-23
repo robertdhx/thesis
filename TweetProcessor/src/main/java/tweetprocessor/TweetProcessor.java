@@ -2,7 +2,6 @@ package tweetprocessor;
 
 import org.apache.commons.cli.*;
 import tweetprocessor.data.Profile;
-import tweetprocessor.data.Tweet;
 import tweetprocessor.util.JsonUtil;
 
 import java.io.File;
@@ -69,28 +68,27 @@ public class TweetProcessor {
 
 		for (File inputFile : fileList) {
 			Processor fileProcessor = new FileProcessor(new HashMap<>(), inputFile);
-			JsonUtil.writeJsonOutput(fileProcessor.getProfilesAndTweets(), inputFile.getName());
+			JsonUtil.writeJsonOutput(fileProcessor.getProfiles(), inputFile.getName());
 		}
 
-		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
+		Map<Long, Profile> profiles = new HashMap<>();
 		System.out.println("Merging results...");
 
 		for (File inputFile : fileList) {
 			File outputFile = new File("output_" + inputFile.getName());
-			JsonUtil.readJsonOutput(outputFile).forEach((k, v) -> profilesAndTweets.merge(k, v, (s1, s2) -> {
-				List<Tweet> tweetList = new ArrayList<>(s1);
-				tweetList.addAll(s2);
-				return tweetList;
+			JsonUtil.readJsonOutput(outputFile).forEach((k, v) -> profiles.merge(k, v, (s1, s2) -> {
+				s1.getTweetList().addAll(s2.getTweetList());
+				return s1;
 			}));
 		}
 
-		Processor postProcessor = new PostProcessor(profilesAndTweets);
-		JsonUtil.writeJsonOutput(postProcessor.getProfilesAndTweets(), "merged.json");
+		Processor postProcessor = new PostProcessor(profiles);
+		JsonUtil.writeJsonOutput(postProcessor.getProfiles(), "merged.json");
 	}
 
 
 	private static void processDataset() {
-		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
+		Map<Long, Profile> profiles = new HashMap<>();
 		File datasetFile = new File("27358-min70-no-maximum.json");
 		Processor datasetProcessor = new DatasetProcessor(datasetFile);
 	}
