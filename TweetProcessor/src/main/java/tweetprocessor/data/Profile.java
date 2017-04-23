@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.List;
+
 
 public class Profile {
 	private long id;
@@ -15,6 +17,8 @@ public class Profile {
 	private String location;
 
 	private PredictedLocation predictedLocation;
+
+	private List<Tweet> tweetList;
 
 
 	public Profile(long id, String username, String name, String location) {
@@ -80,6 +84,16 @@ public class Profile {
 
 	public void setPredictedLocation(PredictedLocation predictedLocation) {
 		this.predictedLocation = predictedLocation;
+	}
+
+
+	public List<Tweet> getTweetList() {
+		return tweetList;
+	}
+
+
+	public void setTweetList(List<Tweet> tweetList) {
+		this.tweetList = tweetList;
 	}
 
 

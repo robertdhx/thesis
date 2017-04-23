@@ -91,7 +91,7 @@ public class TweetProcessor {
 
 	private static void processDataset() {
 		Map<Profile, List<Tweet>> profilesAndTweets = new HashMap<>();
-		File datasetFile = new File("20170421-output-70.json");
+		File datasetFile = new File("27358-min70-no-maximum.json");
 		Processor datasetProcessor = new DatasetProcessor(datasetFile);
 	}
 }

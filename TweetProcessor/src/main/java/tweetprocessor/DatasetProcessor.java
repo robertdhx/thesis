@@ -5,8 +5,7 @@ import tweetprocessor.data.Tweet;
 import tweetprocessor.util.JsonUtil;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -29,25 +28,43 @@ public class DatasetProcessor implements Processor {
 
 	public void doProcessing() {
 		profilesAndTweets = JsonUtil.readJsonOutput(file);
-		showStatistics();
+		System.out.println("Normalizing number of tweets...");
 
-		/*System.out.println("Number of profiles: " + profilesAndTweets.keySet().size());
+		Random random = new Random();
 
-		File file = new File("foo.txt");
-		try (FileWriter writer = new FileWriter(file)) {
-			System.out.print("Writing to file... ");
-			for (Map.Entry<Profile, List<Tweet>> entry : profilesAndTweets.entrySet()) {
-				Profile profile = entry.getKey();
-				writer.write(profile.getLocation() + ", predicted: " + profile.getPredictedLocation() + "\n");
+		for (List<Tweet> tweetList : profilesAndTweets.values()) {
+			while (tweetList.size() > 70) {
+				tweetList.remove(random.nextInt(tweetList.size()));
 			}
-		} catch (IOException e) {
+		}
 
-		}*/
+		for (Map.Entry<Profile, List<Tweet>> entry : profilesAndTweets.entrySet()) {
+			entry.getKey().setTweetList(entry.getValue());
+			entry.setValue(null);
+		}
+
+
+		Map<String, List<Profile>> groupedByProvince = profilesAndTweets.keySet().stream()
+				.collect(Collectors.groupingBy(p -> p.getPredictedLocation().getProvince()));
+
+		Random secondRandom = new Random();
+
+		for (List<Profile> profileList : groupedByProvince.values()) {
+			while (profileList.size() > 350) {
+				profileList.remove(secondRandom.nextInt(profileList.size()));
+			}
+		}
+
+		System.out.println("check!");
+
+
+
+		System.out.println("Number of profiles: " + profilesAndTweets.keySet().size());
+
 	}
 
 
 	private void showStatistics() {
-		Map<String, List<Profile>> groupedByProvince = profilesAndTweets.keySet().stream()
-				.collect(Collectors.groupingBy(p -> p.getPredictedLocation().getProvince()));
+
 	}
 }
