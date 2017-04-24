@@ -7,7 +7,7 @@ import java.util.List;
 
 
 public class Profile {
-	private long id;
+	private String id;
 
 	private String username;
 
@@ -20,7 +20,7 @@ public class Profile {
 	private List<Tweet> tweetList;
 
 
-	public Profile(long id, String username, String name, String location, List<Tweet> tweetList) {
+	public Profile(String id, String username, String name, String location, List<Tweet> tweetList) {
 		this.id = id;
 		this.username = username;
 		this.name = name;
@@ -30,7 +30,7 @@ public class Profile {
 
 
 	public Profile(JsonObject user) {
-		this.id = user.get("id").getAsLong();
+		this.id = user.get("id").getAsString();
 		this.username = user.get("screen_name").getAsString();
 		this.name = user.get("name").getAsString();
 		this.location = user.get("location").getAsString();
@@ -38,12 +38,12 @@ public class Profile {
 	}
 
 
-	public long getId() {
+	public String getId() {
 		return id;
 	}
 
 
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

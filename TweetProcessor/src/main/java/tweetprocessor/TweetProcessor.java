@@ -71,7 +71,7 @@ public class TweetProcessor {
 			JsonUtil.writeJsonOutput(fileProcessor.getProfiles(), inputFile.getName());
 		}
 
-		Map<Long, Profile> profiles = new HashMap<>();
+		Map<String, Profile> profiles = new HashMap<>();
 		System.out.println("Merging results...");
 
 		for (File inputFile : fileList) {
@@ -88,8 +88,8 @@ public class TweetProcessor {
 
 
 	private static void processDataset() {
-		Map<Long, Profile> profiles = new HashMap<>();
-		File datasetFile = new File("27358-min70-no-maximum.json");
+		Map<String, Profile> profiles = new HashMap<>();
+		File datasetFile = new File("output_updated.json");
 		Processor datasetProcessor = new DatasetProcessor(datasetFile);
 	}
 }

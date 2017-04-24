@@ -11,19 +11,19 @@ import java.util.*;
 
 
 public class FileProcessor implements Processor {
-	private Map<Long, Profile> profiles;
+	private Map<String, Profile> profiles;
 
 	private File file;
 
 
-	public FileProcessor(Map<Long, Profile> profiles, File file) {
+	public FileProcessor(Map<String, Profile> profiles, File file) {
 		this.profiles = profiles;
 		this.file = file;
 		doProcessing();
 	}
 
 
-	public Map<Long, Profile> getProfiles() {
+	public Map<String, Profile> getProfiles() {
 		return profiles;
 	}
 
@@ -42,7 +42,7 @@ public class FileProcessor implements Processor {
 
 				if (isRealPerson(user.get("name").getAsString())) {
 					Tweet tweet = new Tweet(fullTweet);
-					long userId = user.get("id").getAsLong();
+					String userId = user.get("id_str").getAsString();
 					if (profiles.containsKey(userId)) {
 						Profile profile = profiles.get(userId);
 						profile.getTweetList().add(tweet);

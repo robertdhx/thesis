@@ -1,14 +1,16 @@
 package tweetprocessor;
 
 import tweetprocessor.data.Profile;
+import tweetprocessor.data.Tweet;
 import tweetprocessor.util.JsonUtil;
 
 import java.io.File;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class DatasetProcessor implements Processor {
-	private Map<Long, Profile> profiles;
+	private Map<String, Profile> profiles;
 
 	private File file;
 
@@ -19,50 +21,45 @@ public class DatasetProcessor implements Processor {
 	}
 
 
-	public Map<Long, Profile> getProfiles() {
+	public Map<String, Profile> getProfiles() {
 		return profiles;
 	}
 
 
 	public void doProcessing() {
 		profiles = JsonUtil.readJsonOutput(file);
-		System.out.println("Normalizing number of tweets...");
-
-		/*Random random = new Random();
-
-		for (List<Tweet> tweetList : profiles.values()) {
-			while (tweetList.size() > 70) {
-				tweetList.remove(random.nextInt(tweetList.size()));
-			}
-		}
-
-		for (Map.Entry<Profile, List<Tweet>> entry : profilesAndTweets.entrySet()) {
-			entry.getKey().setTweetList(entry.getValue());
-			entry.setValue(null);
-		}
-
-
-		Map<String, List<Profile>> groupedByProvince = profilesAndTweets.keySet().stream()
-				.collect(Collectors.groupingBy(p -> p.getPredictedLocation().getProvince()));
-
-		Random secondRandom = new Random();
-
-		for (List<Profile> profileList : groupedByProvince.values()) {
-			while (profileList.size() > 350) {
-				profileList.remove(secondRandom.nextInt(profileList.size()));
-			}
-		}
-
-		System.out.println("check!");
-*/
-
-
-		// System.out.println("Number of profiles: " + profilesAndTweets.keySet().size());
-
+		// setNumberOfTweets(70);
+		// groupAndReduceProfiles();
+		// JsonUtil.writeJsonOutput(profiles, "updated");
 	}
 
 
-	private void showStatistics() {
+	private void setNumberOfTweets(int number) {
+		System.out.println("Setting number of tweets...");
+		Random random = new Random();
+		for (Profile profile : profiles.values()) {
+			List<Tweet> tweetList = profile.getTweetList();
+			while (tweetList.size() > number) {
+				tweetList.remove(random.nextInt(tweetList.size()));
+			}
+		}
+	}
 
+
+	private void groupAndReduceProfiles() {
+		Map<String, List<Profile>> groupedByProvince = profiles.values().stream()
+				.collect(Collectors.groupingBy(p -> p.getPredictedLocation().getProvince()));
+		Map<String, Profile> updatedMap = new HashMap<>();
+		Random random = new Random();
+
+		for (List<Profile> profileList : groupedByProvince.values()) {
+			while (profileList.size() > 358) {
+				profileList.remove(random.nextInt(profileList.size()));
+			}
+			for (Profile profile : profileList) {
+				updatedMap.put(profile.getId(), profile);
+			}
+		}
+		profiles = updatedMap;
 	}
 }

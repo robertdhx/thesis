@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 public class JsonUtil {
-	public static void writeJsonOutput(Map<Long, Profile> profiles, String filename) {
+	public static void writeJsonOutput(Map<String, Profile> profiles, String filename) {
 		File file = new File("output_" + filename);
 		try (Writer writer = new FileWriter(file)) {
 			Gson gson = new GsonBuilder().create();
@@ -24,8 +24,8 @@ public class JsonUtil {
 	}
 
 
-	public static Map<Long, Profile> readJsonOutput(File file) {
-		Type typeOf = new TypeToken<HashMap<Long, Profile>>() {}.getType();
+	public static Map<String, Profile> readJsonOutput(File file) {
+		Type typeOf = new TypeToken<HashMap<String, Profile>>() {}.getType();
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
 		try (Reader reader = new FileReader(file)) {

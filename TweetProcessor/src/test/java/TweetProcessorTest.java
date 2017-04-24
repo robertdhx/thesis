@@ -30,10 +30,10 @@ public class TweetProcessorTest {
 
 	@Test
 	public void testDeserialization() throws Exception {
-		Type typeOf = new TypeToken<HashMap<Long, Profile>>() {}.getType();
+		Type typeOf = new TypeToken<HashMap<String, Profile>>() {}.getType();
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
-		Map<Long, Profile> test = gson.fromJson(new FileReader("output_sample.json"), typeOf);
+		Map<String, Profile> test = gson.fromJson(new FileReader("output_sample.json"), typeOf);
 
 		System.out.println("Number of profiles: " + test.keySet().size());
 		assertNotNull(test);
@@ -87,7 +87,7 @@ public class TweetProcessorTest {
 			JsonUtil.writeJsonOutput(fileProcessor.getProfiles(), inputFile.getName());
 		}
 
-		Map<Long, Profile> profiles = new HashMap<>();
+		Map<String, Profile> profiles = new HashMap<>();
 		System.out.println("Merging results...");
 
 		for (File inputFile : fileList) {
