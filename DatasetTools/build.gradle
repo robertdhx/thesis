@@ -9,7 +9,7 @@ task fatJar(type: Jar) {
 	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 	with jar
 	manifest {
-		attributes 'Main-Class': 'TweetProcessor'
+		attributes 'Main-Class': 'DatasetTools'
 	}
 }
 
