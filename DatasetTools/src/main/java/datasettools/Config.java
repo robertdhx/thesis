@@ -10,7 +10,7 @@ import java.util.*;
 
 
 public class Config {
-	private static Config instance;
+	private static Config config;
 
 	private int minimumTweets = 70;
 
@@ -22,10 +22,13 @@ public class Config {
 
 
 	public static Config getInstance() {
-		if (instance == null) {
-			instance = new Config();
+		if (config == null) {
+			config = new Config();
+			config.buildFirstNamesSet();
+			config.buildPredictedLocationSet();
+			config.buildStopwordList();
 		}
-		return instance;
+		return config;
 	}
 
 

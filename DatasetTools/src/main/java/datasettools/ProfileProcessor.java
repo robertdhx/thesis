@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class DatasetProcessor implements Processor {
+public class ProfileProcessor implements Processor {
 	private Map<String, Profile> profiles;
 
 	private List<ProfileTweets> profileTweetsList;
@@ -21,7 +21,7 @@ public class DatasetProcessor implements Processor {
 	private File file;
 
 
-	public DatasetProcessor(File file) {
+	public ProfileProcessor(File file) {
 		this.file = file;
 		doProcessing();
 	}

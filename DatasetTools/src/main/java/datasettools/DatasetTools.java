@@ -19,12 +19,13 @@ public class DatasetTools {
 		try {
 			CommandLine cmd = parser.parse(options, args);
 
-			if (cmd.hasOption("tweets")) {
-				String[] arguments = cmd.getOptionValues("tweets");
-				processTwitterData(arguments);
+			if (cmd.hasOption("profiles")) {
+				String[] arguments = cmd.getOptionValues("profiles");
+				collectProfiles(arguments);
 			}
 			if (cmd.hasOption("dataset")) {
-				processDataset();
+				String argument = cmd.getOptionValue("dataset");
+				createDataset(argument);
 			}
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
@@ -35,14 +36,22 @@ public class DatasetTools {
 
 	private static Options setCliOptions() {
 		Options options = new Options();
-		Option tweets = Option.builder("tweets")
-				.desc("process tweets")
+
+		Option profiles = Option.builder("profiles")
+				.desc("collect profiles from raw Twitter data")
 				.hasArgs()
 				.valueSeparator(' ')
 				.argName("files")
 				.build();
-		options.addOption(tweets);
-		options.addOption("dataset", "process dataset of profiles and tweets");
+
+		Option dataset = Option.builder("dataset")
+				.desc("create dataset based on profiles")
+				.numberOfArgs(1)
+				.argName("file")
+				.build();
+
+		options.addOption(profiles);
+		options.addOption(dataset);
 		options.addOption("help", "print this message");
 		return options;
 	}
@@ -55,11 +64,7 @@ public class DatasetTools {
 	}
 
 
-	private static void processTwitterData(String[] arguments) {
-		Config config = Config.getInstance();
-		config.buildFirstNamesSet();
-		config.buildPredictedLocationSet();
-
+	private static void collectProfiles(String[] arguments) {
 		List<File> fileList = new ArrayList<>();
 
 		for (String argument : arguments) {
@@ -87,12 +92,8 @@ public class DatasetTools {
 	}
 
 
-	private static void processDataset() {
-		Config config = Config.getInstance();
-		config.buildStopwordList();
-
-		Map<String, Profile> profiles = new HashMap<>();
-		File datasetFile = new File("output_updated.json");
-		Processor datasetProcessor = new DatasetProcessor(datasetFile);
+	private static void createDataset(String argument) {
+		File inputFile = new File("output_updated.json");
+		Processor profileProcessor = new ProfileProcessor(inputFile);
 	}
 }

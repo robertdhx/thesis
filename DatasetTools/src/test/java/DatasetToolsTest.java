@@ -18,10 +18,6 @@ import static org.junit.Assert.assertNotNull;
 public class DatasetToolsTest {
 	@Test
 	public void testGuessLocation() throws Exception {
-		Config config = Config.getInstance();
-		config.buildFirstNamesSet();
-		config.buildPredictedLocationSet();
-
 		PredictedLocation predictedLocation = LocationUtil.guessLocation("Mechelen");
 		PredictedLocation bestMatch = new PredictedLocation("Mechelen", "LI", "NL");
 		assertEquals(predictedLocation, bestMatch);
@@ -42,10 +38,6 @@ public class DatasetToolsTest {
 
 	@Test
 	public void resetPredictedLocations() throws Exception {
-		Config config = Config.getInstance();
-		config.buildFirstNamesSet();
-		config.buildPredictedLocationSet();
-
 		Type typeOf = new TypeToken<HashMap<Profile, Collection<Tweet>>>() { }.getType();
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
@@ -70,8 +62,6 @@ public class DatasetToolsTest {
 	@Test
 	public void testDuplicates() throws Exception {
 		Config config = Config.getInstance();
-		config.buildFirstNamesSet();
-		config.buildPredictedLocationSet();
 		config.setMinimumTweets(1);
 
 		ClassLoader classLoader = this.getClass().getClassLoader();
@@ -105,7 +95,6 @@ public class DatasetToolsTest {
 	@Test
 	public void checkShortPredictedLocations() throws Exception {
 		Config config = Config.getInstance();
-		config.buildPredictedLocationSet();
 
 		for (PredictedLocation predictedLocation : config.getPredictedLocationSet()) {
 			if (predictedLocation.getPlace().length() <= 2 && predictedLocation.getCountry().equals("NL")) {
