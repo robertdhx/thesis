@@ -96,4 +96,10 @@ public class Tweet {
 		}
 		return hashtagList;
 	}
+
+
+	@Override
+	public String toString() {
+		return this.getText();
+	}
 }

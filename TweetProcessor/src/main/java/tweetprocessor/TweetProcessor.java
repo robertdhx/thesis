@@ -88,6 +88,9 @@ public class TweetProcessor {
 
 
 	private static void processDataset() {
+		Config config = Config.getInstance();
+		config.buildStopwordList();
+
 		Map<String, Profile> profiles = new HashMap<>();
 		File datasetFile = new File("output_updated.json");
 		Processor datasetProcessor = new DatasetProcessor(datasetFile);

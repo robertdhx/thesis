@@ -1,8 +1,12 @@
 package tweetprocessor;
 
+import com.twitter.Extractor;
+import org.unbescape.html.HtmlEscape;
 import tweetprocessor.data.Profile;
 import tweetprocessor.data.Tweet;
+import tweetprocessor.util.ArffUtil;
 import tweetprocessor.util.JsonUtil;
+import tweetprocessor.wekadata.ProfileTweets;
 
 import java.io.File;
 import java.util.*;
@@ -11,6 +15,8 @@ import java.util.stream.Collectors;
 
 public class DatasetProcessor implements Processor {
 	private Map<String, Profile> profiles;
+
+	private List<ProfileTweets> profileTweetsList;
 
 	private File file;
 
@@ -28,9 +34,25 @@ public class DatasetProcessor implements Processor {
 
 	public void doProcessing() {
 		profiles = JsonUtil.readJsonOutput(file);
+		// Skip below steps for testing purposes
 		// setNumberOfTweets(70);
 		// groupAndReduceProfiles();
 		// JsonUtil.writeJsonOutput(profiles, "updated");
+
+		removeMentions();
+		removeUrls();
+		removeHashtags();
+		convertHtmlEntities();
+		removeNewlines();
+		removeUnicodeSymbols();
+		removeEmoticons();
+		removePunctuation();
+		removeDoubleSpaces();
+		removeStopwords();
+
+		createUserTweetDocument();
+
+		ArffUtil.writeArffOutput(profileTweetsList, "test.arff");
 	}
 
 
@@ -61,5 +83,144 @@ public class DatasetProcessor implements Processor {
 			}
 		}
 		profiles = updatedMap;
+	}
+
+
+	private void removeMentions() {
+		for (Profile profile : profiles.values()) {
+			for (Tweet tweet : profile.getTweetList()) {
+				String tweetText = tweet.getText();
+				Extractor extractor = new Extractor();
+				List<String> list = extractor.extractMentionedScreennames(tweetText);
+				for (String mention : list) {
+					tweetText = tweetText.replace("@" + mention, "");
+					tweet.setText(tweetText);
+				}
+			}
+		}
+	}
+
+
+	private void removeHashtags() {
+		for (Profile profile : profiles.values()) {
+			for (Tweet tweet : profile.getTweetList()) {
+				String tweetText = tweet.getText();
+				Extractor extractor = new Extractor();
+				List<String> list = extractor.extractHashtags(tweetText);
+				for (String hashtag : list) {
+					tweetText = tweetText.replace("#" + hashtag, "");
+					tweet.setText(tweetText);
+				}
+			}
+		}
+	}
+
+
+	private void removeUrls() {
+		for (Profile profile : profiles.values()) {
+			for (Tweet tweet : profile.getTweetList()) {
+				String tweetText = tweet.getText();
+				Extractor extractor = new Extractor();
+				List<String> list = extractor.extractURLs(tweetText);
+				for (String url : list) {
+					tweetText = tweetText.replace(url, "");
+					tweet.setText(tweetText);
+				}
+			}
+		}
+	}
+
+
+	private void convertHtmlEntities() {
+		for (Profile profile : profiles.values()) {
+			for (Tweet tweet : profile.getTweetList()) {
+				String tweetText = tweet.getText();
+				tweet.setText(HtmlEscape.unescapeHtml(tweetText));
+			}
+		}
+	}
+
+
+	private void removeNewlines() {
+		for (Profile profile : profiles.values()) {
+			for (Tweet tweet : profile.getTweetList()) {
+				String tweetText = tweet.getText();
+				tweet.setText(tweetText.replaceAll("\\r|\\n", ""));
+			}
+		}
+	}
+
+
+	private void removeDoubleSpaces() {
+		for (Profile profile : profiles.values()) {
+			for (Tweet tweet : profile.getTweetList()) {
+				String tweetText = tweet.getText();
+				tweet.setText(tweetText.trim().replaceAll(" +", " "));
+			}
+		}
+	}
+
+
+	private void removeUnicodeSymbols() {
+		for (Profile profile : profiles.values()) {
+			for (Tweet tweet : profile.getTweetList()) {
+				String tweetText = tweet.getText();
+				tweet.setText(tweetText.replaceAll("\\p{So}+", ""));
+			}
+		}
+	}
+
+
+	private void removeEmoticons() {
+		for (Profile profile : profiles.values()) {
+			for (Tweet tweet : profile.getTweetList()) {
+				String tweetText = tweet.getText();
+				String[] emoticons = {":)", ":(", ":P", "<3", ":-)", ":-(", ":-P"};
+				for (String emoticon : emoticons) {
+					tweetText = tweetText.replace(emoticon, "");
+					tweet.setText(tweetText);
+				}
+			}
+		}
+	}
+
+
+	private void removePunctuation() {
+		for (Profile profile : profiles.values()) {
+			for (Tweet tweet : profile.getTweetList()) {
+				String tweetText = tweet.getText();
+				tweet.setText(tweetText.replaceAll("[^\\p{IsAlphabetic}^\\p{IsDigit}^\\s]", " "));
+			}
+		}
+	}
+
+
+	private void removeStopwords() {
+		for (Profile profile : profiles.values()) {
+			for (Tweet tweet : profile.getTweetList()) {
+				String tweetText = tweet.getText();
+				String[] splitted = tweetText.split("\\s+");
+				List<String> allowedWords = new ArrayList<>();
+				for (String word : splitted) {
+					if (!Config.getInstance().getStopwords().contains(word.trim().toLowerCase())) {
+						allowedWords.add(word);
+					}
+				}
+				tweet.setText(String.join(" ", allowedWords));
+			}
+		}
+	}
+
+
+	private void createUserTweetDocument() {
+		profileTweetsList = new ArrayList<>();
+		for (Profile profile : profiles.values()) {
+			ProfileTweets profileTweets = new ProfileTweets();
+			profileTweets.setId(profile.getId());
+			profileTweets.setProvince(profile.getPredictedLocation().getProvince());
+			profileTweets.setTweetText(profile.getTweetList().stream().map(Tweet::toString)
+					.collect(Collectors.joining(" ")).toLowerCase());
+			profileTweetsList.add(profileTweets);
+		}
 	}
 }

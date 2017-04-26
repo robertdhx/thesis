@@ -18,6 +18,8 @@ public class Config {
 
 	private Set<PredictedLocation> predictedLocationSet;
 
+	private Set<String> stopwords;
+
 
 	public static Config getInstance() {
 		if (instance == null) {
@@ -35,6 +37,9 @@ public class Config {
 	public Set<PredictedLocation> getPredictedLocationSet() {
 		return predictedLocationSet;
 	}
+
+
+	public Set<String> getStopwords() { return stopwords; }
 
 
 	public void buildFirstNamesSet() {
@@ -55,10 +60,26 @@ public class Config {
 	public void buildPredictedLocationSet() {
 		try (InputStream in = this.getClass().getResourceAsStream("/places.json")) {
 			BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-			Type type = new TypeToken<HashSet<PredictedLocation>>() {	}.getType();
+			Type type = new TypeToken<HashSet<PredictedLocation>>() {
+			}.getType();
 			this.predictedLocationSet = new Gson().fromJson(br, type);
 		} catch (IOException e) {
 			throw new RuntimeException("Could not load file with places.", e);
+		}
+	}
+
+
+	public void buildStopwordList() {
+		try (InputStream in = this.getClass().getResourceAsStream("/stopwords.txt")) {
+			BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+			Set<String> stopwords = new HashSet<>();
+			String line;
+			while ((line = br.readLine()) != null) {
+				stopwords.add(line);
+			}
+			this.stopwords = stopwords;
+		} catch (IOException e) {
+			throw new RuntimeException("Could not load file with stopwords.", e);
 		}
 	}
 
