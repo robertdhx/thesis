@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 
-public class TweetProcessorTest {
+public class DatasetToolsTest {
 	@Test
 	public void testGuessLocation() throws Exception {
 		Config config = Config.getInstance();

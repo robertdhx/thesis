@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.*;
 
 
-public class TweetProcessor {
+public class DatasetTools {
 	private static final int SCREEN_WIDTH_COLUMNS = 79;
 
 
@@ -51,7 +51,7 @@ public class TweetProcessor {
 	private static void showHelp(Options options) {
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.setWidth(SCREEN_WIDTH_COLUMNS);
-		formatter.printHelp("TweetProcessor [option] [argument]", options);
+		formatter.printHelp("DatasetTools [option] [argument]", options);
 	}
 
 
