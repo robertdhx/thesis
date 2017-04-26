@@ -1,8 +1,8 @@
-package tweetprocessor;
+package datasettools;
 
 import org.apache.commons.cli.*;
-import tweetprocessor.data.Profile;
-import tweetprocessor.util.JsonUtil;
+import datasettools.data.Profile;
+import datasettools.util.JsonUtil;
 
 import java.io.File;
 import java.util.*;

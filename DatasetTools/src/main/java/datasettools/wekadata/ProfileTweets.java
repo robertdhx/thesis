@@ -1,4 +1,4 @@
-package tweetprocessor.wekadata;
+package datasettools.wekadata;
 
 
 public class ProfileTweets {

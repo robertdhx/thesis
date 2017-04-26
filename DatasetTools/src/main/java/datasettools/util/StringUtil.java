@@ -1,4 +1,4 @@
-package tweetprocessor.util;
+package datasettools.util;
 
 public class StringUtil {
 	public static String getFirstName(String name) {

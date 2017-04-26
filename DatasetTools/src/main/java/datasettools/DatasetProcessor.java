@@ -1,12 +1,12 @@
-package tweetprocessor;
+package datasettools;
 
 import com.twitter.Extractor;
 import org.unbescape.html.HtmlEscape;
-import tweetprocessor.data.Profile;
-import tweetprocessor.data.Tweet;
-import tweetprocessor.util.ArffUtil;
-import tweetprocessor.util.JsonUtil;
-import tweetprocessor.wekadata.ProfileTweets;
+import datasettools.data.Profile;
+import datasettools.data.Tweet;
+import datasettools.util.ArffUtil;
+import datasettools.util.JsonUtil;
+import datasettools.wekadata.ProfileTweets;
 
 import java.io.File;
 import java.util.*;

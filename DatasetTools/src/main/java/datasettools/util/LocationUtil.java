@@ -1,8 +1,8 @@
-package tweetprocessor.util;
+package datasettools.util;
 
 import org.apache.commons.lang3.StringUtils;
-import tweetprocessor.Config;
-import tweetprocessor.data.PredictedLocation;
+import datasettools.Config;
+import datasettools.data.PredictedLocation;
 
 import java.util.*;
 

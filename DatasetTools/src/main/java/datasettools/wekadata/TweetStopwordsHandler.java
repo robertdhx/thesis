@@ -1,6 +1,6 @@
-package tweetprocessor.wekadata;
+package datasettools.wekadata;
 
-import tweetprocessor.Config;
+import datasettools.Config;
 import weka.core.stopwords.StopwordsHandler;
 
 

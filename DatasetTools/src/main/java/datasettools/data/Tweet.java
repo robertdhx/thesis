@@ -1,4 +1,4 @@
-package tweetprocessor.data;
+package datasettools.data;
 
 import com.google.gson.*;
 

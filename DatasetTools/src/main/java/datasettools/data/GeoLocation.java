@@ -1,4 +1,4 @@
-package tweetprocessor.data;
+package datasettools.data;
 
 public class GeoLocation {
 	private double latitude;

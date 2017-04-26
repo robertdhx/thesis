@@ -1,6 +1,6 @@
-package tweetprocessor.util;
+package datasettools.util;
 
-import tweetprocessor.wekadata.ProfileTweets;
+import datasettools.wekadata.ProfileTweets;
 
 import java.io.*;
 import java.util.List;

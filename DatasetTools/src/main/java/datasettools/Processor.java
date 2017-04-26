@@ -1,6 +1,6 @@
-package tweetprocessor;
+package datasettools;
 
-import tweetprocessor.data.Profile;
+import datasettools.data.Profile;
 
 import java.util.Map;
 

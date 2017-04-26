@@ -1,10 +1,10 @@
-package tweetprocessor;
+package datasettools;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import tweetprocessor.data.*;
-import tweetprocessor.util.LocationUtil;
-import tweetprocessor.util.StringUtil;
+import datasettools.data.*;
+import datasettools.util.LocationUtil;
+import datasettools.util.StringUtil;
 
 import java.io.*;
 import java.util.*;

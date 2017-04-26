@@ -1,8 +1,8 @@
-package tweetprocessor;
+package datasettools;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import tweetprocessor.data.PredictedLocation;
+import datasettools.data.PredictedLocation;
 
 import java.io.*;
 import java.lang.reflect.Type;

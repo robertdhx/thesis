@@ -2,10 +2,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.junit.Test;
-import tweetprocessor.*;
-import tweetprocessor.data.*;
-import tweetprocessor.util.JsonUtil;
-import tweetprocessor.util.LocationUtil;
+import datasettools.*;
+import datasettools.data.*;
+import datasettools.util.JsonUtil;
+import datasettools.util.LocationUtil;
 
 import java.io.*;
 import java.lang.reflect.Type;
