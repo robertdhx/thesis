@@ -13,6 +13,8 @@ public class Profile {
 
 	private String name;
 
+	private String description;
+
 	private String location;
 
 	private PredictedLocation predictedLocation;
@@ -20,10 +22,11 @@ public class Profile {
 	private List<Tweet> tweetList;
 
 
-	public Profile(String id, String username, String name, String location, List<Tweet> tweetList) {
+	public Profile(String id, String username, String name, String description, String location, List<Tweet> tweetList) {
 		this.id = id;
 		this.username = username;
 		this.name = name;
+		this.description = description;
 		this.location = location;
 		this.tweetList = tweetList;
 	}
@@ -33,6 +36,7 @@ public class Profile {
 		this.id = user.get("id").getAsString();
 		this.username = user.get("screen_name").getAsString();
 		this.name = user.get("name").getAsString();
+		this.description = user.get("description").getAsString();
 		this.location = user.get("location").getAsString();
 		this.tweetList = new ArrayList<>();
 	}
@@ -65,6 +69,16 @@ public class Profile {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+
+	public String getDescription() {
+		return description;
+	}
+
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 
