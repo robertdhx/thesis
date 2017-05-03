@@ -36,7 +36,9 @@ public class Profile {
 		this.id = user.get("id").getAsString();
 		this.username = user.get("screen_name").getAsString();
 		this.name = user.get("name").getAsString();
-		this.description = user.get("description").getAsString();
+		if (!user.get("description").isJsonNull()) {
+			this.description = user.get("description").getAsString();
+		}
 		this.location = user.get("location").getAsString();
 		this.tweetList = new ArrayList<>();
 	}
