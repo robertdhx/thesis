@@ -19,13 +19,13 @@ public class DatasetTools {
 		try {
 			CommandLine cmd = parser.parse(options, args);
 
-			if (cmd.hasOption("profiles")) {
-				String[] arguments = cmd.getOptionValues("profiles");
-				collectProfiles(arguments);
-			}
 			if (cmd.hasOption("dataset")) {
-				String argument = cmd.getOptionValue("dataset");
-				createDataset(argument);
+				String[] arguments = cmd.getOptionValues("dataset");
+				createDataset(arguments);
+			}
+			if (cmd.hasOption("arff")) {
+				String argument = cmd.getOptionValue("arff");
+				createArffFiles(argument);
 			}
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
@@ -37,15 +37,15 @@ public class DatasetTools {
 	private static Options setCliOptions() {
 		Options options = new Options();
 
-		Option profiles = Option.builder("profiles")
-				.desc("collect profiles from raw Twitter data")
+		Option profiles = Option.builder("dataset")
+				.desc("create dataset from raw Twitter data")
 				.hasArgs()
 				.valueSeparator(' ')
 				.argName("files")
 				.build();
 
-		Option dataset = Option.builder("dataset")
-				.desc("create dataset based on profiles")
+		Option dataset = Option.builder("arff")
+				.desc("create arff files from dataset")
 				.numberOfArgs(1)
 				.argName("file")
 				.build();
@@ -64,7 +64,7 @@ public class DatasetTools {
 	}
 
 
-	private static void collectProfiles(String[] arguments) {
+	private static void createDataset(String[] arguments) {
 		List<File> fileList = new ArrayList<>();
 
 		for (String argument : arguments) {
@@ -92,8 +92,8 @@ public class DatasetTools {
 	}
 
 
-	private static void createDataset(String argument) {
-		File inputFile = new File("output_updated.json");
+	private static void createArffFiles(String argument) {
+		File inputFile = new File(argument);
 		Processor profileProcessor = new ProfileProcessor(inputFile);
 	}
 }

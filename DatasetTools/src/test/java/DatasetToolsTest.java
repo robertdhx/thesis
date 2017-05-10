@@ -102,4 +102,33 @@ public class DatasetToolsTest {
 			}
 		}
 	}
+
+
+	@Test
+	public void mergeFiles() throws Exception {
+		List<File> fileList = new ArrayList<>();
+		fileList.add(new File("201610.json"));
+		fileList.add(new File("201611.json"));
+		fileList.add(new File("201612.json"));
+		fileList.add(new File("201701.json"));
+		fileList.add(new File("201702.json"));
+		fileList.add(new File("201703.json"));
+
+		Map<String, Profile> profiles = new HashMap<>();
+		System.out.println("Merging results...");
+
+		for (File inputFile : fileList) {
+			System.out.println("Merging " + inputFile.getName());
+			File outputFile = new File(inputFile.getName());
+			Map<String, Profile> test = JsonUtil.readJsonOutput(outputFile);
+			test.forEach((k, v) -> profiles.merge(k, v, (s1, s2) -> {
+				s1.getTweetList().addAll(s2.getTweetList());
+				s2 = null;
+				return s1;
+			}));
+		}
+
+		Processor postProcessor = new PostProcessor(profiles);
+		JsonUtil.writeJsonOutput(postProcessor.getProfiles(), "merged_6months.json");
+	}
 }

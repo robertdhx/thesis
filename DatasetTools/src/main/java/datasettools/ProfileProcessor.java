@@ -1,12 +1,12 @@
 package datasettools;
 
 import com.twitter.Extractor;
-import org.unbescape.html.HtmlEscape;
 import datasettools.data.Profile;
 import datasettools.data.Tweet;
 import datasettools.util.ArffUtil;
 import datasettools.util.JsonUtil;
-import datasettools.wekadata.ProfileTweets;
+import datasettools.data.ProfileTweets;
+import org.unbescape.html.HtmlEscape;
 
 import java.io.File;
 import java.util.*;
@@ -34,10 +34,9 @@ public class ProfileProcessor implements Processor {
 
 	public void doProcessing() {
 		profiles = JsonUtil.readJsonOutput(file);
-		// Skip below steps for testing purposes
-		// setNumberOfTweets(70);
+		setNumberOfTweets(70);
 		// groupAndReduceProfiles();
-		// JsonUtil.writeJsonOutput(profiles, "updated");
+		// JsonUtil.writeJsonOutput(profiles, "updated.json");
 
 		removeMentions();
 		removeUrls();
@@ -51,7 +50,6 @@ public class ProfileProcessor implements Processor {
 		removeStopwords();
 
 		createUserTweetDocument();
-
 		ArffUtil.writeArffOutput(profileTweetsList, "test.arff");
 	}
 

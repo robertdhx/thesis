@@ -1,7 +1,6 @@
 package datasettools.util;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import datasettools.data.Profile;
 
@@ -15,7 +14,7 @@ public class JsonUtil {
 	public static void writeJsonOutput(Map<String, Profile> profiles, String filename) {
 		File file = new File("output_" + filename);
 		try (Writer writer = new FileWriter(file)) {
-			Gson gson = new GsonBuilder().create();
+			Gson gson = new Gson();
 			gson.toJson(profiles, writer);
 			System.out.println("JSON file saved in: " + file.getAbsolutePath());
 		} catch (IOException e) {
@@ -26,8 +25,7 @@ public class JsonUtil {
 
 	public static Map<String, Profile> readJsonOutput(File file) {
 		Type typeOf = new TypeToken<HashMap<String, Profile>>() {}.getType();
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		Gson gson = gsonBuilder.create();
+		Gson gson = new Gson();
 		try (Reader reader = new FileReader(file)) {
 			return gson.fromJson(reader, typeOf);
 		} catch (IOException e) {

@@ -1,6 +1,6 @@
 package datasettools.util;
 
-import datasettools.wekadata.ProfileTweets;
+import datasettools.data.ProfileTweets;
 
 import java.io.*;
 import java.util.List;
