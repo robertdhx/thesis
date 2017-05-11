@@ -1,21 +1,23 @@
 package datasettools.data;
 
 
-public class ProfileTweets {
-	private String id;
+public class ArffInstance {
+	private String description;
 
 	private String tweetText;
+
+	private String hashtags;
 
 	private String province;
 
 
-	public String getId() {
-		return id;
+	public String getDescription() {
+		return description;
 	}
 
 
-	public void setId(String id) {
-		this.id = id;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 
@@ -26,6 +28,16 @@ public class ProfileTweets {
 
 	public void setTweetText(String tweetText) {
 		this.tweetText = tweetText;
+	}
+
+
+	public String getHashtags() {
+		return hashtags;
+	}
+
+
+	public void setHashtags(String hashtags) {
+		this.hashtags = hashtags;
 	}
 
 
