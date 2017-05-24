@@ -24,27 +24,23 @@ public class MainServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		List<LocalWord> localWordList = config.getLocalWordList();
 		String query = request.getParameter("query");
-		String[] queryParts = query.split(" ");
-		if (queryParts.length > 1) {
-			LocalWord localWord = new LocalWord();
-			switch (queryParts[1]) {
-				case "(D)":
-					localWord.setType(LocalWord.WordType.DESCRIPTION);
-					break;
-				case "(H)":
-					localWord.setType(LocalWord.WordType.HASHTAG);
-					break;
-				default:
-					localWord.setType(LocalWord.WordType.TWEET);
-					break;
-			}
-			localWord.setValue(queryParts[0]);
 
-			int index = localWordList.indexOf(localWord);
-			if (index != -1) {
-				localWord = localWordList.get(index);
-				request.setAttribute("selectedLocalWord", localWord);
-			}
+		LocalWord localWord = new LocalWord();
+		if (query.endsWith("(D)")) {
+			localWord.setType(LocalWord.WordType.DESCRIPTION);
+		} else if (query.endsWith("(H)")) {
+			localWord.setType(LocalWord.WordType.HASHTAG);
+		} else {
+			localWord.setType(LocalWord.WordType.TWEET);
+		}
+		localWord.setValue(query.split("\\s")[0]);
+
+		int index = localWordList.indexOf(localWord);
+		if (index != -1) {
+			localWord = localWordList.get(index);
+			request.setAttribute("selectedLocalWord", localWord);
+		} else {
+			request.setAttribute("notFoundMessage", "Word could not be found.");
 		}
 		request.setAttribute("localWordList", localWordList);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("main.jsp");

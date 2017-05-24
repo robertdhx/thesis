@@ -39,12 +39,19 @@
     <form id="searchForm" method="post" class="col s12">
       <div class="row">
         <div class="input-field col s12">
-          <input type="text" id="search" name="query" class="autocomplete" autocomplete="off">
-          <label for="search" class="active">Enter a word</label>
+          <input type="text" id="search" name="query" class="autocomplete" autocomplete="off"
+                 onkeypress="return event.keyCode != 13;">
+          <label for="search" class="active">Try searching and click one of the suggestions...</label>
         </div>
       </div>
     </form>
   </div>
+  <c:if test="${not empty notFoundMessage}">
+    <div class="row">
+        ${notFoundMessage}
+    </div>
+  </c:if>
+
   <c:if test="${not empty selectedLocalWord}">
     <div class="row">
       <h4>Results for '${selectedLocalWord.value}' (${fn:substring(selectedLocalWord.type, 0, 1)})</h4>
@@ -88,7 +95,10 @@
         var options = {
           region: 'NL',
           resolution: 'provinces',
-          legend: 'none'
+          legend: 'none',
+          tooltip: {
+            trigger: 'none'
+          }
         };
 
         var chart = new google.visualization.GeoChart(document.getElementById('map'));
@@ -101,7 +111,7 @@
 <div id="aboutModal" class="modal">
   <div class="modal-content">
     <h4>About</h4>
-    <p>This application is part of my Master thesis about geolocating Dutch Twitter users.</p>
+    <p>This application was developed as part of my Master thesis about geolocating Dutch Twitter users.</p>
     <h5>How to use?</h5>
     <p>Just enter a word in the search box. Click one of the suggestions to view probabilities.
       The T, D and H indicate the source of the word (tweet, user description or hashtag).</p>
